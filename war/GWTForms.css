@@ -1,0 +1,77 @@
+/** Example rules used by the template application (remove for your app) */
+.gwt-MenuBar {
+  background-color: #F3F5F6;
+  border: outset 1px;
+}
+
+.gwt-MenuBar .gwt-MenuItem {
+  font-size: 9pt;
+  cursor: hand;
+  cursor: pointer;
+  padding: 2px 5px 2px 5px;
+  margin: 0px;
+}
+
+.gwt-MenuBar .gwt-MenuItem-selected {
+  background-color: #316AC5;
+  color: white;
+}
+
+table {
+  border-spacing: 0px;
+}
+
+td {
+  padding: 0px;
+}
+
+:focus {
+  outline: none;
+}
+
+.gwt-DialogBox {
+  border-width: 2px;
+  border-style: outset;
+  background-color: #F0F0F0; 
+}
+
+.dialogTopCenterInner {
+  background-color: #99B4D1;
+  padding: 2px;
+  margin-bottom: 5px;
+}
+
+.Caption {
+  font: 13px Arial;
+  width: 100%;
+}
+
+.CloseButton {
+  float: right;
+}
+
+.hsprompt {
+  font: 12px Arial;
+}
+
+.hsinput {
+  font: 12px Arial;
+  border-image: none;
+  border-width: 2px;
+  /*box-shadow: inset 0 0 2px;*/
+  padding-top: 4px;
+  padding-bottom: 2px;
+  padding-left: 1px;
+  padding-right: 1px;
+}
+
+.selected2 {
+  background-color: #000080;
+  color: #FFFFFF;
+}
+
+.enterQuery {
+  background-color: #FFFF00;
+  color: #000000;
+}
+

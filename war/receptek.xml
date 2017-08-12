@@ -1,0 +1,32 @@
+<receptek>
+  <recept>
+    <nev>Mákostészta</nev>
+    <sutesi_ido>1 óra</sutesi_ido>
+    <nehezseg>könnyű</nehezseg>
+  </recept>
+  <recept>
+    <nev>Paprikás krumpli</nev>
+    <sutesi_ido>2 óra</sutesi_ido>
+    <nehezseg>közepes</nehezseg>
+  </recept>  
+  <recept>
+    <nev>Túrógombóc</nev>
+    <sutesi_ido>2 óra</sutesi_ido>
+    <nehezseg>közepes</nehezseg>
+  </recept>
+  <recept>
+    <nev>Lasagne</nev>
+    <sutesi_ido>3 óra</sutesi_ido>
+    <nehezseg>nehéz</nehezseg>
+  </recept>   
+  <recept>
+    <nev>Császármorzsa</nev>
+    <sutesi_ido>1 óra</sutesi_ido>
+    <nehezseg>közepes</nehezseg>
+  </recept>   
+  <recept>
+    <nev>Gombás rántotta</nev>
+    <sutesi_ido>1 óra</sutesi_ido>
+    <nehezseg>könnyű</nehezseg>
+  </recept>     
+</receptek>

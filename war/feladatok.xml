@@ -1,0 +1,22 @@
+<feladatok>
+  <feladat>
+    <kulcs>SD0352352</kulcs>
+    <tema>Cégbíróság-egyablak</tema>
+    <nev>Bankszámlaszámok feldolgozásának javítása</nev>
+    <leiras>Ajjaj</leiras>
+    <statusz>Fejlesztés alatt</statusz>
+    <prioritas>Átlagos</prioritas>
+    <felado>011161</felado>
+    <megoldo>011161</megoldo>
+  </feladat>   
+  <feladat>
+    <kulcs>0123456789</kulcs>
+    <tema>Bíróság-egyablak</tema>
+    <nev>Szervezet típus adat javítása</nev>
+    <leiras>Ez meg mi lesz vajon?</leiras>
+    <statusz>Fejlesztés alatt</statusz>
+    <prioritas>Alacsony</prioritas>
+    <felado>011161</felado>
+    <megoldo>011161</megoldo>
+  </feladat>     
+</feladatok>
