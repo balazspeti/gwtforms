@@ -59,7 +59,6 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
       //Logger.getLogger("").log(Level.SEVERE, "renderRecord");
       this.renderRecord(this.verticalPanel);
     }
-    
   }
   
   
@@ -84,16 +83,30 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
   }
   
   
-  protected void register(FocusWidget widget,
+  protected void register(Widget widget,
                           String name,
                           boolean queryable) {
     this.records.lastElement().put(name, new FormsItem(name, widget, queryable));
     if ( widget instanceof TextBox ) {
-      widget.addFocusHandler(this);
-      widget.addKeyUpHandler(this);
+      ((TextBox) widget).addFocusHandler(this);
+      ((TextBox) widget).addKeyUpHandler(this);
+      if ( this.records.size() == 1 && this.visibleRecords > 1 ) {
+        widget.addStyleName("selected2");
+      }
+    }
+    else if ( widget instanceof ListBox ) {
+      ((ListBox) widget).addFocusHandler(this);
+      ((ListBox) widget).addKeyUpHandler(this);
       if ( this.records.size() == 1 && this.visibleRecords > 1 ) {
         widget.addStyleName("selected2");
       }      
+    }
+    else if ( widget instanceof SuggestBox ) {
+      ((SuggestBox) widget).getValueBox().addFocusHandler(this);
+      ((SuggestBox) widget).getValueBox().addKeyUpHandler(this);
+      if ( this.records.size() == 1 && this.visibleRecords > 1 ) {
+        ((SuggestBox) widget).getValueBox().addStyleName("selected2");
+      }     
     }
     if ( this.firstItem == null ) {
       this.firstItem = name;
@@ -108,10 +121,14 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
   public void onKeyUp(KeyUpEvent event) {
     int keyCode = event.getNativeEvent().getKeyCode();
     if ( keyCode == 38 ) {
-      this.up();
+      if ( !(records.get(currentRecord).get(currentItem).getWidget() instanceof ListBox) ) {
+        this.up();
+      }
     }
     else if ( keyCode == 40 ) {
-      this.down();
+      if ( !(records.get(currentRecord).get(currentItem).getWidget() instanceof ListBox) ) {
+        this.down();
+      }
     }
     else if ( keyCode == 117 ) {
       this.clearBlock();
@@ -132,6 +149,7 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
   
   
   public void onFocus(FocusEvent event) {
+    Logger.getLogger("").log(Level.SEVERE, "teszt");
     activeComponent = this;
     for (String item : records.get(this.currentRecord).itemNames()) {
       if ( this.records.get(this.currentRecord).get(item).isSource(event) ) {
@@ -235,6 +253,19 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
   
   
   public void executeQuery() {
+    String queryParams = "";
+    for (String item : records.get(0).itemNames()) {
+      if ( records.get(0).get(item).getText() != null && 
+           !"".equals(records.get(0).get(item).getText()) ) {
+        if ( "".equals(queryParams) ) {
+          queryParams = "?" + item + "=" + records.get(0).get(item).getText();
+        }
+        else {
+          queryParams = queryParams + "&" + item + "=" + records.get(0).get(item).getText();
+        }
+      }
+    }    
+    
     this.mode = 0;
     this.clearBlock();
     for (String item : records.get(0).itemNames()) {
@@ -244,7 +275,8 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
     
     this.records.get(0).get(firstItem).setFocus(true);
     
-    RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, this.blockName + ".xml");
+    Logger.getLogger("").log(Level.SEVERE, "GET: " + this.blockName + ".xml" + queryParams);
+    RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, this.blockName + ".xml" + queryParams);
     try {
       requestBuilder.sendRequest(null, new RequestCallback() {
         public void onError(Request request, Throwable exception) {
@@ -341,5 +373,12 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
     }
   }
   
+  
+  public void createRecord() {
+    if ( mode == 0 ) {
+      renderRecord(verticalPanel);
+      records.lastElement().get(firstItem).setFocus(true);
+    }
+  }
   
 }

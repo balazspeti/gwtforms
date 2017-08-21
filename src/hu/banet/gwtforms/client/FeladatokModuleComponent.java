@@ -4,8 +4,10 @@ import com.google.gwt.core.client.*;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.*;
 //import com.google.gwt.sample.showcase.client.content.text.*;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.*;
+import java.util.*;
+import java.util.logging.*;
 
 
 public class FeladatokModuleComponent extends FormsModuleComponent {
@@ -16,7 +18,7 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
   
   
   public FeladatokModuleComponent() {
-    super("feladatok", "feladat", 3);
+    super("feladatok", "feladat", 5);
   }
   
   
@@ -41,7 +43,7 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
     
     Label label5 = new Label("Prioritás");
     label5.addStyleName("hsprompt");
-    label5.setWidth("66px");
+    label5.setWidth("86px");
     
     Label label6 = new Label("Feladó");
     label6.addStyleName("hsprompt");
@@ -71,9 +73,22 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
     textBox1.setWidth("100px");
     textBox1.addStyleName("hsinput");
     
-    TextBox textBox2 = new TextBox();
+    /*TextBox textBox2 = new TextBox();
     textBox2.setWidth("80px");
-    textBox2.addStyleName("hsinput");
+    textBox2.addStyleName("hsinput");*/
+    
+    String[] temak = {"Cégbíróság-egyablak", 
+                      "Bíróság-egyablak", 
+                      "Adatlapok",
+                      "Adatok",
+                      "Egyebek",
+                      "Cégjegyzékszám",
+                      "Egyéb"};
+    MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
+    oracle.addAll(Arrays.asList(temak));
+    SuggestBox tema = new SuggestBox(oracle);
+    tema.setWidth("80px");
+    tema.addStyleName("hsinput");   
     
     TextBox textBox3 = new TextBox();
     textBox3.setWidth("350px");
@@ -83,9 +98,25 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
     textBox4.setWidth("100px");
     textBox4.addStyleName("hsinput");
     
-    TextBox textBox5 = new TextBox();
+    /*TextBox textBox5 = new TextBox();
     textBox5.setWidth("60px");
-    textBox5.addStyleName("hsinput");
+    textBox5.addStyleName("hsinput");*/
+    ListBox prioritas = new ListBox(); /*{
+      public void onBrowserEvent(Event event) {
+        Logger.getLogger("").log(Level.SEVERE, "before " + this.getSelectedIndex());
+        event.preventDefault();
+        event.stopPropagation();
+        Logger.getLogger("").log(Level.SEVERE, "after " + this.getSelectedIndex());
+      }
+    };*/
+    prioritas.addItem("");
+    prioritas.addItem("Mellékes");
+    prioritas.addItem("Alacsony");
+    prioritas.addItem("Átlagos");
+    prioritas.addItem("Fontos");
+    prioritas.addItem("Sürgős");
+    prioritas.setWidth("80px");
+    prioritas.addStyleName("hsinput");
     
     TextBox textBox6 = new TextBox();
     textBox6.setWidth("50px");
@@ -97,10 +128,10 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
     
     HorizontalPanel horizontalPanel = new HorizontalPanel();
     horizontalPanel.add(textBox1);
-    horizontalPanel.add(textBox2);
+    horizontalPanel.add(tema);
     horizontalPanel.add(textBox3);
     horizontalPanel.add(textBox4);
-    horizontalPanel.add(textBox5);
+    horizontalPanel.add(prioritas);
     horizontalPanel.add(textBox6);
     horizontalPanel.add(textBox7);
     
@@ -130,11 +161,11 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
     }
     
     this.register(textBox1, "kulcs", true);
-    this.register(textBox2, "tema", true);
+    this.register(tema, "tema", true);
     this.register(textBox3, "nev", true);
     this.register(this.richTextArea, "leiras", false);
-    this.register(textBox4, "statusz", false);
-    this.register(textBox5, "prioritas", false);
+    this.register(textBox4, "statusz", true);
+    this.register(prioritas, "prioritas", true);
     this.register(textBox6, "felado", true);
     this.register(textBox7, "megoldo", true);
   }

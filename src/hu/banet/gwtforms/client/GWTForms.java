@@ -1,36 +1,29 @@
 package hu.banet.gwtforms.client;
 
-import hu.banet.gwtforms.shared.FieldVerifier;
+import com.google.gwt.cell.client.*;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.logging.client.*;
+import com.google.gwt.user.cellview.client.*;
+import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.*;
 import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
+import com.google.gwt.view.client.*;
+import java.util.*;
 import java.util.logging.*;
+
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class GWTForms implements EntryPoint {
-  /**
-   * The message displayed to the user when the server cannot be reached or
-   * returns an error.
-   */
-  private static final String SERVER_ERROR = "An error occurred while "
-      + "attempting to contact the server. Please check your network "
-      + "connection and try again.";
-
-  /**
-   * Create a remote service proxy to talk to the server-side Greeting service.
-   */
-  private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
-
 
   public void onModuleLoad() {
   
@@ -100,10 +93,10 @@ public class GWTForms implements EntryPoint {
     szerkesztesAlMenuBar.addItem("Kiválasztás hatóköre", new Command() { 
       public void execute() {  }});
     szerkesztesAlMenuBar.addItem("Lekérdezés", new Command() { 
-      public void execute() {  }});
+      public void execute() {  }});*/
     szerkesztesAlMenuBar.addItem("Új rekord", new Command() { 
-      public void execute() {  }});
-    szerkesztesAlMenuBar.addItem("Rekord törlése", new Command() { 
+      public void execute() { FormsModuleComponent.getActiveComponent().createRecord(); }});
+    /*szerkesztesAlMenuBar.addItem("Rekord törlése", new Command() { 
       public void execute() {  }});
     szerkesztesAlMenuBar.addItem("Rekord ürítése", new Command() { 
       public void execute() {  }});
@@ -146,7 +139,123 @@ public class GWTForms implements EntryPoint {
         feladatokDialogBox.setWidget(feladatokModuleComponent);       
         feladatokDialogBox.center(); 
       }
-    });         
+    });
+    ablakokAlMenuBar.addItem("Feladatok 2", new Command() {
+      public void execute() {
+        List<Feladat> feladatok = Arrays.asList(
+          new Feladat("1",
+                      "SD0352352",
+                      "Cégbíróság-egyablak",
+                      "Bankszámlaszámok feldolgozásának javítása",
+                      "Ajjaj",
+                      "Fejlesztés alatt",
+                      "Átlagos",
+                      "011161",
+                      "011161"),
+          new Feladat("2",
+                      "0123456789",
+                      "Bíróság-egyablak",
+                      "Szervezet típus adat javítása",
+                      "Ez meg mi lesz vajon?",
+                      "Fejlesztés alatt",
+                      "Alacsony",
+                      "011161",
+                      "011161"));
+          
+        CellTable<Feladat> cellTable = new CellTable<Feladat>();
+        cellTable.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
+        
+        Column<Feladat, String> kulcsColumn = new Column<Feladat, String>(
+            new EditTextCell()) {
+          @Override
+          public String getValue(Feladat feladat) {
+            return feladat.getKulcs();
+          }
+        };
+        cellTable.addColumn(kulcsColumn, "Kulcs");
+        cellTable.setColumnWidth(kulcsColumn, 100, Style.Unit.PX);
+      
+        Column<Feladat, String> temaColumn = new Column<Feladat, String>(
+            new EditTextCell()) {
+          @Override
+          public String getValue(Feladat feladat) {
+            return feladat.getTema();
+          }
+        };
+        cellTable.addColumn(temaColumn, "Téma");
+        cellTable.setColumnWidth(temaColumn, 80, Style.Unit.PX);
+        
+        Column<Feladat, String> nevColumn = new Column<Feladat, String>(
+            new EditTextCell()) {
+          @Override
+          public String getValue(Feladat feladat) {
+            return feladat.getNev();
+          }
+        };
+        cellTable.addColumn(nevColumn, "Név");
+        cellTable.setColumnWidth(nevColumn, 350, Style.Unit.PX);
+        
+        Column<Feladat, String> statuszColumn = new Column<Feladat, String>(
+            new EditTextCell()) {
+          @Override
+          public String getValue(Feladat feladat) {
+            return feladat.getStatusz();
+          }
+        };
+        cellTable.addColumn(statuszColumn, "Státusz");
+        cellTable.setColumnWidth(statuszColumn, 100, Style.Unit.PX);
+
+        Column<Feladat, String> prioritasColumn = new Column<Feladat, String>(
+            new EditTextCell()) {
+          @Override
+          public String getValue(Feladat feladat) {
+            return feladat.getPrioritas();
+          }
+        };
+        cellTable.addColumn(prioritasColumn, "Prioritás");
+        cellTable.setColumnWidth(prioritasColumn, 80, Style.Unit.PX);   
+
+        Column<Feladat, String> feladoColumn = new Column<Feladat, String>(
+            new EditTextCell()) {
+          @Override
+          public String getValue(Feladat feladat) {
+            return feladat.getFelado();
+          }
+        };
+        cellTable.addColumn(feladoColumn, "Feladó");
+        cellTable.setColumnWidth(feladoColumn, 50, Style.Unit.PX);
+        
+        Column<Feladat, String> megoldoColumn = new Column<Feladat, String>(
+            new EditTextCell()) {
+          @Override
+          public String getValue(Feladat feladat) {
+            return feladat.getMegoldo();
+          }
+        };
+        cellTable.addColumn(megoldoColumn, "Megoldó");
+        cellTable.setColumnWidth(megoldoColumn, 50, Style.Unit.PX);        
+        
+        /*final SingleSelectionModel<Employee> singleSelectionModel = new SingleSelectionModel<Employee>();
+        cellTable.setSelectionModel(singleSelectionModel);
+        singleSelectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+          public void onSelectionChange(SelectionChangeEvent event) {
+            Employee selectedEmployee = singleSelectionModel.getSelectedObject();
+            if (selectedEmployee != null) {
+              Window.alert("Selected: " + selectedEmployee.getName());
+            }
+          }
+        });*/
+
+        cellTable.setRowCount(feladatok.size(), true);
+        cellTable.setRowData(0, feladatok);
+        
+        final FormsWindow feladatokDialogBox = new FormsWindow(false, false);
+        feladatokDialogBox.setText("Feladatok");
+        feladatokDialogBox.setAnimationEnabled(false);
+        feladatokDialogBox.setWidget(cellTable);       
+        feladatokDialogBox.center(); 
+      }
+    });
 
     MenuBar ablakokFoMenuBar = new MenuBar();
     ablakokFoMenuBar.addItem("Ablakok", ablakokAlMenuBar);
@@ -156,11 +265,15 @@ public class GWTForms implements EntryPoint {
     menuHorizontalPanel.add(szerkesztesFoMenuBar);
     menuHorizontalPanel.add(ablakokFoMenuBar);
     
-    TextBox tesztTextBox = new TextBox();
-    tesztTextBox.setEnabled(false);
-    menuHorizontalPanel.add(tesztTextBox);
+    ListBox teszt = new ListBox();
+    teszt.addItem("egy");
+    teszt.addItem("kettő");
+    teszt.addItem("három");
+    
+    menuHorizontalPanel.add(teszt);
     
     RootPanel.get("gombContainer").add(menuHorizontalPanel);
     
   }
+  
 }

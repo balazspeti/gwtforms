@@ -1,0 +1,29 @@
+<html>
+
+<script type="text/javascript">
+function IgnoreAlpha(e)
+{
+    /*if (!e)
+    {
+        e = window.event ;
+    }
+    if (e.keyCode >= 65 && e.keyCode <= 90) // A to Z
+    {*/
+        e.returnValue=false;
+        e.cancel = true;
+    /*}*/
+}
+</script>
+
+<body>
+    <p>
+        <select id="MySelect" name="MySelect" onkeydown="IgnoreAlpha(event);"">
+            <option selected="selected" value="" />
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+        </select>
+    </p>
+</body>
+
+</html>
