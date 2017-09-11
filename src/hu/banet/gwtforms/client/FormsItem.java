@@ -5,7 +5,7 @@ import com.google.gwt.user.client.ui.*;
 import java.util.logging.*;
 
 
-public class FormsItem implements FocusHandler {
+public class FormsItem {
 
 
   private String name;
@@ -22,16 +22,6 @@ public class FormsItem implements FocusHandler {
     this.value = "";
     this.changed = false;
     this.queryable = queryable;
-    
-    if ( widget instanceof TextBox ) {
-      ((TextBox) widget).addFocusHandler(this);
-    }
-    else if ( widget instanceof ListBox ) {
-      ((ListBox) widget).addFocusHandler(this);   
-    }
-    else if ( widget instanceof SuggestBox ) {
-      ((SuggestBox) widget).getValueBox().addFocusHandler(this);
-    }
   } 
   
   
@@ -72,14 +62,11 @@ public class FormsItem implements FocusHandler {
   }
   
   
-  public boolean isSource(FocusEvent event) {
-    if ( this.widget == null ) {
-      return false;
+  public Object getSource() {
+    if ( widget instanceof SuggestBox ) {
+      return ((SuggestBox) widget).getValueBox();
     }
-    if ( this.widget instanceof SuggestBox ) {
-      return event.getSource() == ((SuggestBox) this.widget).getValueBox();
-    }
-    return event.getSource() == this.widget;
+    return widget;
   }
   
   

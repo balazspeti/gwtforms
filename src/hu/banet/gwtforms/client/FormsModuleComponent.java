@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.logging.*;
 
 
-public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler, FocusHandler {
+public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler, FocusHandler, BlurHandler {
   
   
   private static FormsModuleComponent activeComponent;
@@ -19,6 +19,11 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
   
   public static FormsModuleComponent getActiveComponent() {
     return activeComponent;
+  }
+  
+  
+  public static void setActiveComponent(FormsModuleComponent moduleComponent) {
+    activeComponent = moduleComponent;
   }
   
 
@@ -34,6 +39,7 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
   private VerticalPanel verticalPanel;
   private boolean loaded;
   private TextBox connectionUrlTextBox;
+  private Map<Object, Integer> widgetTable;
   
   
   public FormsModuleComponent(String blockName, String recordName, int visibleRecords) {
@@ -47,6 +53,7 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
     this.firstItem = null;
     this.records = new Vector<FormsRecord>(0);
     this.loaded = false;
+    widgetTable = new HashMap<Object, Integer>();
     
     this.renderHead(this);
     
@@ -57,7 +64,6 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
     this.add(scrollPanel);
     
     for (int i=0; i<this.visibleRecords; i++) {
-      //Logger.getLogger("").log(Level.SEVERE, "renderRecord");
       this.renderRecord(this.verticalPanel);
     }
   }
@@ -85,39 +91,50 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
   
   
   protected void renderRecord(VerticalPanel verticalPanel) {
-    this.records.add(new FormsRecord(this.records.size()));
+    this.records.add(new FormsRecord(this.records.size(), this));
   }
   
   
   protected void register(Widget widget,
                           String name,
-                          boolean queryable) { 
-    this.records.lastElement().put(name, new FormsItem(name, widget, queryable));
+                          boolean queryable) {
+    FormsItem item = new FormsItem(name, widget, queryable);                           
+    this.records.lastElement().put(name, item);
+    if ( this.records.size() == 1 && this.visibleRecords > 1 ) {
+      item.addStyleName("selected2");
+    }
     if ( widget instanceof TextBox ) {
       ((TextBox) widget).addFocusHandler(this);
+      ((TextBox) widget).addBlurHandler(this);
       ((TextBox) widget).addKeyUpHandler(this);
-      if ( this.records.size() == 1 && this.visibleRecords > 1 ) {
-        widget.addStyleName("selected2");
-      }
     }
     else if ( widget instanceof ListBox ) {
       ((ListBox) widget).addFocusHandler(this);
-      ((ListBox) widget).addKeyUpHandler(this);
-      if ( this.records.size() == 1 && this.visibleRecords > 1 ) {
-        widget.addStyleName("selected2");
-      }      
+      ((ListBox) widget).addBlurHandler(this);
+      ((ListBox) widget).addKeyUpHandler(this);     
     }
+    else if ( widget instanceof RichTextArea ) {
+      ((RichTextArea) widget).addFocusHandler(this);
+      ((RichTextArea) widget).addBlurHandler(this);
+      ((RichTextArea) widget).addKeyUpHandler(this);     
+    }    
     else if ( widget instanceof SuggestBox ) {
       ((SuggestBox) widget).getValueBox().addFocusHandler(this);
-      ((SuggestBox) widget).getValueBox().addKeyUpHandler(this);
-      if ( this.records.size() == 1 && this.visibleRecords > 1 ) {
-        ((SuggestBox) widget).getValueBox().addStyleName("selected2");
-      }     
+      ((SuggestBox) widget).getValueBox().addBlurHandler(this);
+      ((SuggestBox) widget).getValueBox().addKeyUpHandler(this);   
     }
     if ( this.firstItem == null &&
          widget != null ) {
       this.firstItem = name;
       this.currentItem = name;
+    }
+    if ( item.getSource() != null ) {
+      if ( widgetTable.containsKey(item.getSource()) ) {
+        widgetTable.put(item.getSource(), -1);
+      }
+      else {
+        widgetTable.put(item.getSource(), records.size()-1);
+      }
     }
   }
   
@@ -156,13 +173,10 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
   
   
   public void onFocus(FocusEvent event) {
-    Logger.getLogger("").log(Level.SEVERE, "teszt");
     activeComponent = this;
     for (String item : records.get(this.currentRecord).itemNames()) {
-      if ( this.records.get(this.currentRecord).get(item).isSource(event) ) {
-        //Logger.getLogger("").log(Level.SEVERE, "onFocus: " + item + currentRecord);
+      if ( this.records.get(this.currentRecord).get(item).getSource() == event.getSource() ) {
         if ( !item.equals(this.currentItem) ) {
-          //Logger.getLogger("").log(Level.SEVERE, "lost focus: " + this.currentItem + this.currentRecord);
           this.records.get(this.currentRecord).get(this.currentItem).change();
           this.currentItem = item;
           this.records.get(this.currentRecord).get(this.currentItem).selectAll();
@@ -170,40 +184,31 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
         return;
       }
     }
-    for (int record=0; record<this.records.size(); record++) {
-      if ( record != this.currentRecord ) {
-        for (String item : records.get(record).itemNames()) {
-          if ( this.records.get(record).get(item).isSource(event) ) {
-            //Logger.getLogger("").log(Level.SEVERE, "onFocus: " + item + record);
-            /*if ( 0 != record && this.mode == 1 ) {
-              Logger.getLogger("").log(Level.SEVERE, "setFocus: " + this.currentItem + this.currentRecord);
-              this.records.get(record).get(item).setFocus(false);
-              this.records.get(this.currentRecord).get(this.currentItem).setFocus(true);
-            }
-            else {*/
-              //Logger.getLogger("").log(Level.SEVERE, "lost focus: " + this.currentItem + this.currentRecord);
-              this.records.get(this.currentRecord).get(this.currentItem).change();
-              if ( this.currentRecord != record && this.visibleRecords > 1 ) {
-                for (String l : records.get(this.currentRecord).itemNames()) {
-                  //Logger.getLogger("").log(Level.SEVERE, "Ez van: " + l);
-                  this.records.get(this.currentRecord).get(l).removeStyleName("selected2");
-                }
-                for (String l : records.get(record).itemNames()) {
-                  this.records.get(record).get(l).addStyleName("selected2");
-                  this.records.get(record).get(l).refresh();
-                }
-              }
-              this.currentRecord = record;
-              this.currentItem   = item;
-              this.records.get(this.currentRecord).get(this.currentItem).selectAll();
-            //}
-            return;
+    int record = widgetTable.get(event.getSource());
+    for (String item : records.get(record).itemNames()) {
+      if ( this.records.get(record).get(item).getSource() == event.getSource() ) {
+        this.records.get(this.currentRecord).get(this.currentItem).change();
+        if ( this.currentRecord != record && this.visibleRecords > 1 ) {
+          for (String l : records.get(this.currentRecord).itemNames()) {
+            this.records.get(this.currentRecord).get(l).removeStyleName("selected2");
+          }
+          for (String l : records.get(record).itemNames()) {
+            this.records.get(record).get(l).addStyleName("selected2");
+            this.records.get(record).get(l).refresh();
           }
         }
+        this.currentRecord = record;
+        this.currentItem   = item;
+        this.records.get(this.currentRecord).get(this.currentItem).selectAll();
+        return;
       }
     }
   }
 
+  
+  public void onBlur(BlurEvent event) {
+  }  
+  
 
   private void up() {
     if ( this.currentRecord > 0 ) {
@@ -419,4 +424,5 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
     }
   }
   
+
 }

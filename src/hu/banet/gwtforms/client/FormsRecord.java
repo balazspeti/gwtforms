@@ -1,21 +1,23 @@
 package hu.banet.gwtforms.client;
 
 import java.util.*;
-//import com.google.gwt.user.client.ui.*;
+import com.google.gwt.event.dom.client.*;
 
 
 public class FormsRecord {
 
 
   private Map<String, FormsItem> items;
-  private int recordNumber;
+  private int number;
   private String state;
+  private FormsModuleComponent moduleComponent;
   
  
-  public FormsRecord(int recordNumber) {
-    this.recordNumber = recordNumber;
+  public FormsRecord(int number, FormsModuleComponent moduleComponent) {
+    this.number = number;
     this.items = new HashMap<String, FormsItem>();
     this.state = "NEW";
+    this.moduleComponent = moduleComponent;
   } 
   
   
@@ -42,7 +44,7 @@ public class FormsRecord {
   public void put(String name, FormsItem item) {
     items.put(name, item);
     item.setRecord(this);
-  }
+  } 
   
 
 }
