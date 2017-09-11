@@ -11,7 +11,7 @@ public class Feladat {
   private String leiras;
   private String statusz;
   private String prioritas;
-  private String felado;
+  private String letrehozo;
   private String megoldo;
 	
   
@@ -22,7 +22,7 @@ public class Feladat {
                  String leiras,
                  String statusz,
                  String prioritas,
-                 String felado,
+                 String letrehozo,
                  String megoldo) {
 		this.azon      = azon;
     this.kulcs     = kulcs;
@@ -31,7 +31,7 @@ public class Feladat {
     this.leiras    = leiras;
     this.statusz   = statusz;
     this.prioritas = prioritas;
-    this.felado    = felado;
+    this.letrehozo = letrehozo;
     this.megoldo   = megoldo;
   }
 	
@@ -71,8 +71,8 @@ public class Feladat {
   }
  
   
-  public String getFelado() {
-    return this.felado;
+  public String getLetrehozo() {
+    return this.letrehozo;
   }
  
   
@@ -116,8 +116,8 @@ public class Feladat {
   }
   
   
-  public void setFelado(String felado) {
-    this.felado = felado;
+  public void setLetrehozo(String letrehozo) {
+    this.letrehozo = letrehozo;
   }
   
   

@@ -5,7 +5,7 @@ import com.google.gwt.user.client.ui.*;
 import java.util.logging.*;
 
 
-public class FormsItem {
+public class FormsItem implements FocusHandler {
 
 
   private String name;
@@ -22,6 +22,16 @@ public class FormsItem {
     this.value = "";
     this.changed = false;
     this.queryable = queryable;
+    
+    if ( widget instanceof TextBox ) {
+      ((TextBox) widget).addFocusHandler(this);
+    }
+    else if ( widget instanceof ListBox ) {
+      ((ListBox) widget).addFocusHandler(this);   
+    }
+    else if ( widget instanceof SuggestBox ) {
+      ((SuggestBox) widget).getValueBox().addFocusHandler(this);
+    }
   } 
   
   
@@ -63,6 +73,9 @@ public class FormsItem {
   
   
   public boolean isSource(FocusEvent event) {
+    if ( this.widget == null ) {
+      return false;
+    }
     if ( this.widget instanceof SuggestBox ) {
       return event.getSource() == ((SuggestBox) this.widget).getValueBox();
     }
@@ -94,16 +107,20 @@ public class FormsItem {
   
   public void addStyleName(String styleName) {
     //Logger.getLogger("").log(Level.SEVERE, "addStyleName: " + this.name);
-    if ( !( this.widget instanceof RichTextArea ) ) {
-      this.widget.addStyleName(styleName);
+    if ( this.widget != null ) {
+      if ( !( this.widget instanceof RichTextArea ) ) {
+        this.widget.addStyleName(styleName);
+      }
     }
   }  
   
   
   public void removeStyleName(String styleName) {
     //Logger.getLogger("").log(Level.SEVERE, "removeStyleName: " + this.name);
-    if ( !( this.widget instanceof RichTextArea ) ) {
-      this.widget.removeStyleName(styleName);
+    if ( this.widget != null ) {
+      if ( !( this.widget instanceof RichTextArea ) ) {
+        this.widget.removeStyleName(styleName);
+      }
     }
   }
   

@@ -33,6 +33,7 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
   private ScrollPanel   scrollPanel;
   private VerticalPanel verticalPanel;
   private boolean loaded;
+  private TextBox connectionUrlTextBox;
   
   
   public FormsModuleComponent(String blockName, String recordName, int visibleRecords) {
@@ -62,6 +63,11 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
   }
   
   
+  public void setConnectionUrlTextBox(TextBox connectionUrlTextBox) {
+    this.connectionUrlTextBox = connectionUrlTextBox;
+  }
+  
+  
   public void onLoad() {
     if ( !loaded ) {        
       Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
@@ -85,7 +91,7 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
   
   protected void register(Widget widget,
                           String name,
-                          boolean queryable) {
+                          boolean queryable) { 
     this.records.lastElement().put(name, new FormsItem(name, widget, queryable));
     if ( widget instanceof TextBox ) {
       ((TextBox) widget).addFocusHandler(this);
@@ -108,7 +114,8 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
         ((SuggestBox) widget).getValueBox().addStyleName("selected2");
       }     
     }
-    if ( this.firstItem == null ) {
+    if ( this.firstItem == null &&
+         widget != null ) {
       this.firstItem = name;
       this.currentItem = name;
     }
@@ -153,10 +160,11 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
     activeComponent = this;
     for (String item : records.get(this.currentRecord).itemNames()) {
       if ( this.records.get(this.currentRecord).get(item).isSource(event) ) {
-        Logger.getLogger("").log(Level.SEVERE, "onFocus: " + item + currentRecord);
+        //Logger.getLogger("").log(Level.SEVERE, "onFocus: " + item + currentRecord);
         if ( !item.equals(this.currentItem) ) {
-          this.records.get(this.currentRecord).get(item).change();
-          this.currentItem   = item;
+          //Logger.getLogger("").log(Level.SEVERE, "lost focus: " + this.currentItem + this.currentRecord);
+          this.records.get(this.currentRecord).get(this.currentItem).change();
+          this.currentItem = item;
           this.records.get(this.currentRecord).get(this.currentItem).selectAll();
         }
         return;
@@ -166,13 +174,14 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
       if ( record != this.currentRecord ) {
         for (String item : records.get(record).itemNames()) {
           if ( this.records.get(record).get(item).isSource(event) ) {
-            Logger.getLogger("").log(Level.SEVERE, "onFocus: " + item + record);
+            //Logger.getLogger("").log(Level.SEVERE, "onFocus: " + item + record);
             /*if ( 0 != record && this.mode == 1 ) {
               Logger.getLogger("").log(Level.SEVERE, "setFocus: " + this.currentItem + this.currentRecord);
               this.records.get(record).get(item).setFocus(false);
               this.records.get(this.currentRecord).get(this.currentItem).setFocus(true);
             }
             else {*/
+              //Logger.getLogger("").log(Level.SEVERE, "lost focus: " + this.currentItem + this.currentRecord);
               this.records.get(this.currentRecord).get(this.currentItem).change();
               if ( this.currentRecord != record && this.visibleRecords > 1 ) {
                 for (String l : records.get(this.currentRecord).itemNames()) {
@@ -255,16 +264,16 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
   public void executeQuery() {
     String queryParams = "";
     for (String item : records.get(0).itemNames()) {
-      if ( records.get(0).get(item).getText() != null && 
-           !"".equals(records.get(0).get(item).getText()) ) {
+      if ( records.get(0).get(item).getValue() != null && 
+           !"".equals(records.get(0).get(item).getValue()) ) {
         if ( "".equals(queryParams) ) {
-          queryParams = "?" + item + "=" + records.get(0).get(item).getText();
+          queryParams = "?" + item + "=" + records.get(0).get(item).getValue();
         }
         else {
-          queryParams = queryParams + "&" + item + "=" + records.get(0).get(item).getText();
+          queryParams = queryParams + "&" + item + "=" + records.get(0).get(item).getValue();
         }
       }
-    }    
+    }
     
     this.mode = 0;
     this.clearBlock();
@@ -276,7 +285,15 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
     this.records.get(0).get(firstItem).setFocus(true);
     
     Logger.getLogger("").log(Level.SEVERE, "GET: " + this.blockName + ".xml" + queryParams);
-    RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, this.blockName + ".xml" + queryParams);
+    RequestBuilder requestBuilder;
+    if ( connectionUrlTextBox == null || 
+         connectionUrlTextBox.getText() == null ||
+         "".equals(connectionUrlTextBox.getText()) ) {
+      requestBuilder = new RequestBuilder(RequestBuilder.GET, this.blockName + ".xml" + queryParams);
+    }
+    else {
+      requestBuilder = new RequestBuilder(RequestBuilder.GET, "http://" + connectionUrlTextBox.getText() + queryParams);
+    }
     try {
       requestBuilder.sendRequest(null, new RequestCallback() {
         public void onError(Request request, Throwable exception) {
@@ -339,20 +356,41 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
       Element blockElement = document.createElement(this.blockName);
       document.appendChild(blockElement);
       for (int record=0; record<this.records.size(); record++) {
-        Element recordElement = document.createElement(this.recordName);
-        blockElement.appendChild(recordElement);
+        boolean changedRecord = false;
         for (String item : records.get(record).itemNames()) {
-          Element itemElement = document.createElement(item);
-          recordElement.appendChild(itemElement);
-          Text itemText = document.createTextNode(records.get(record).get(item).getValue());
-          itemElement.appendChild(itemText);
-          records.get(record).get(item).setNotChanged();
+          if ( !changedRecord &&
+               ( ( records.get(record).get(item).getValue() != null && 
+                   !"".equals(records.get(record).get(item).getValue()) ) ||
+                 records.get(record).get(item).isChanged() ) ) {
+            changedRecord = true;
+          }
         }
-        records.get(record).setState("QUERY");
+        if ( changedRecord ) {
+          Element recordElement = document.createElement(this.recordName);
+          blockElement.appendChild(recordElement);
+          for (String item : records.get(record).itemNames()) {
+            Element itemElement = document.createElement(item);
+            recordElement.appendChild(itemElement);
+            Text itemText = document.createTextNode(records.get(record).get(item).getValue());
+            itemElement.appendChild(itemText);
+            records.get(record).get(item).setNotChanged();
+            //Logger.getLogger("").log(Level.SEVERE, item + record + " : " + records.get(record).get(item).getValue());
+          }
+          records.get(record).setState("QUERY");
+        }
       }
       Window.alert(document.toString());
       
-      RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, this.blockName + ".xml");
+      RequestBuilder requestBuilder;
+      if ( connectionUrlTextBox == null || 
+           connectionUrlTextBox.getText() == null ||
+           "".equals(connectionUrlTextBox.getText()) ) {
+        requestBuilder = new RequestBuilder(RequestBuilder.POST, this.blockName + ".xml");
+      }
+      else {
+        requestBuilder = new RequestBuilder(RequestBuilder.POST, "http://" + connectionUrlTextBox.getText());
+      }
+      
       requestBuilder.setHeader("Content-Type", "text/xml");
       try {
         requestBuilder.sendRequest(document.toString(), new RequestCallback() {

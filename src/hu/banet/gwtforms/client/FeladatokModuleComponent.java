@@ -45,7 +45,7 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
     label5.addStyleName("hsprompt");
     label5.setWidth("86px");
     
-    Label label6 = new Label("Feladó");
+    Label label6 = new Label("Létrehozó");
     label6.addStyleName("hsprompt");
     label6.setWidth("56px");
 
@@ -110,11 +110,11 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
       }
     };*/
     prioritas.addItem("");
-    prioritas.addItem("Mellékes");
-    prioritas.addItem("Alacsony");
-    prioritas.addItem("Átlagos");
-    prioritas.addItem("Fontos");
-    prioritas.addItem("Sürgős");
+    prioritas.addItem("5");
+    prioritas.addItem("4");
+    prioritas.addItem("3");
+    prioritas.addItem("2");
+    prioritas.addItem("1");
     prioritas.setWidth("80px");
     prioritas.addStyleName("hsinput");
     
@@ -160,13 +160,14 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
       this.richTextArea.addKeyUpHandler(this); 
     }
     
+    this.register(null, "azon", true);
     this.register(textBox1, "kulcs", true);
     this.register(tema, "tema", true);
     this.register(textBox3, "nev", true);
     this.register(this.richTextArea, "leiras", false);
     this.register(textBox4, "statusz", true);
     this.register(prioritas, "prioritas", true);
-    this.register(textBox6, "felado", true);
+    this.register(textBox6, "letrehozo", true);
     this.register(textBox7, "megoldo", true);
   }
   

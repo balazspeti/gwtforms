@@ -27,7 +27,9 @@ public class GWTForms implements EntryPoint {
 
   public void onModuleLoad() {
   
-    ReceptekModuleComponent receptekModuleComponent = new ReceptekModuleComponent();
+    final TextBox connectionUrlTextBox = new TextBox();
+  
+    /*ReceptekModuleComponent receptekModuleComponent = new ReceptekModuleComponent();
   
     final FormsWindow receptekDialogBox = new FormsWindow(false, false);
     receptekDialogBox.setText("Receptek");
@@ -39,14 +41,7 @@ public class GWTForms implements EntryPoint {
     final FormsWindow hozzavalokDialogBox = new FormsWindow(false, false);
     hozzavalokDialogBox.setText("Hozzávalók");
     hozzavalokDialogBox.setAnimationEnabled(false);
-    hozzavalokDialogBox.setWidget(hozzavalokModuleComponent);    
-
-    FeladatokModuleComponent feladatokModuleComponent = new FeladatokModuleComponent();
-  
-    final FormsWindow feladatokDialogBox = new FormsWindow(false, false);
-    feladatokDialogBox.setText("Feladatok");
-    feladatokDialogBox.setAnimationEnabled(false);
-    feladatokDialogBox.setWidget(feladatokModuleComponent);            
+    hozzavalokDialogBox.setWidget(hozzavalokModuleComponent);  */           
 
     MenuBar fajlAlMenuBar = new MenuBar(true);
     /*fajlAlMenuBar.addItem("Bezárás", new Command() { 
@@ -125,13 +120,14 @@ public class GWTForms implements EntryPoint {
     szerkesztesFoMenuBar.addItem("Szerkesztés", szerkesztesAlMenuBar);
     
     MenuBar ablakokAlMenuBar = new MenuBar(true);
-    ablakokAlMenuBar.addItem("Receptek", new Command() { 
+    /*ablakokAlMenuBar.addItem("Receptek", new Command() { 
       public void execute() { receptekDialogBox.center(); }});
     ablakokAlMenuBar.addItem("Hozzavalok", new Command() { 
-      public void execute() { hozzavalokDialogBox.center(); }});   
+      public void execute() { hozzavalokDialogBox.center(); }});*/   
     ablakokAlMenuBar.addItem("Feladatok", new Command() { 
       public void execute() { 
         FeladatokModuleComponent feladatokModuleComponent = new FeladatokModuleComponent();
+        feladatokModuleComponent.setConnectionUrlTextBox(connectionUrlTextBox);
   
         final FormsWindow feladatokDialogBox = new FormsWindow(false, false);
         feladatokDialogBox.setText("Feladatok");
@@ -149,7 +145,7 @@ public class GWTForms implements EntryPoint {
                       "Bankszámlaszámok feldolgozásának javítása",
                       "Ajjaj",
                       "Fejlesztés alatt",
-                      "Átlagos",
+                      "1",
                       "011161",
                       "011161"),
           new Feladat("2",
@@ -158,7 +154,7 @@ public class GWTForms implements EntryPoint {
                       "Szervezet típus adat javítása",
                       "Ez meg mi lesz vajon?",
                       "Fejlesztés alatt",
-                      "Alacsony",
+                      "2",
                       "011161",
                       "011161"));
           
@@ -166,7 +162,7 @@ public class GWTForms implements EntryPoint {
         cellTable.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
         
         Column<Feladat, String> kulcsColumn = new Column<Feladat, String>(
-            new EditTextCell()) {
+            new TextInputCell()) {
           @Override
           public String getValue(Feladat feladat) {
             return feladat.getKulcs();
@@ -176,7 +172,7 @@ public class GWTForms implements EntryPoint {
         cellTable.setColumnWidth(kulcsColumn, 100, Style.Unit.PX);
       
         Column<Feladat, String> temaColumn = new Column<Feladat, String>(
-            new EditTextCell()) {
+            new TextInputCell()) {
           @Override
           public String getValue(Feladat feladat) {
             return feladat.getTema();
@@ -186,7 +182,7 @@ public class GWTForms implements EntryPoint {
         cellTable.setColumnWidth(temaColumn, 80, Style.Unit.PX);
         
         Column<Feladat, String> nevColumn = new Column<Feladat, String>(
-            new EditTextCell()) {
+            new TextInputCell()) {
           @Override
           public String getValue(Feladat feladat) {
             return feladat.getNev();
@@ -196,7 +192,7 @@ public class GWTForms implements EntryPoint {
         cellTable.setColumnWidth(nevColumn, 350, Style.Unit.PX);
         
         Column<Feladat, String> statuszColumn = new Column<Feladat, String>(
-            new EditTextCell()) {
+            new TextInputCell()) {
           @Override
           public String getValue(Feladat feladat) {
             return feladat.getStatusz();
@@ -206,7 +202,7 @@ public class GWTForms implements EntryPoint {
         cellTable.setColumnWidth(statuszColumn, 100, Style.Unit.PX);
 
         Column<Feladat, String> prioritasColumn = new Column<Feladat, String>(
-            new EditTextCell()) {
+            new TextInputCell()) {
           @Override
           public String getValue(Feladat feladat) {
             return feladat.getPrioritas();
@@ -215,18 +211,18 @@ public class GWTForms implements EntryPoint {
         cellTable.addColumn(prioritasColumn, "Prioritás");
         cellTable.setColumnWidth(prioritasColumn, 80, Style.Unit.PX);   
 
-        Column<Feladat, String> feladoColumn = new Column<Feladat, String>(
-            new EditTextCell()) {
+        Column<Feladat, String> letrehozoColumn = new Column<Feladat, String>(
+            new TextInputCell()) {
           @Override
           public String getValue(Feladat feladat) {
-            return feladat.getFelado();
+            return feladat.getLetrehozo();
           }
         };
-        cellTable.addColumn(feladoColumn, "Feladó");
-        cellTable.setColumnWidth(feladoColumn, 50, Style.Unit.PX);
+        cellTable.addColumn(letrehozoColumn, "Létrehozó");
+        cellTable.setColumnWidth(letrehozoColumn, 50, Style.Unit.PX);
         
         Column<Feladat, String> megoldoColumn = new Column<Feladat, String>(
-            new EditTextCell()) {
+            new TextInputCell()) {
           @Override
           public String getValue(Feladat feladat) {
             return feladat.getMegoldo();
@@ -265,12 +261,7 @@ public class GWTForms implements EntryPoint {
     menuHorizontalPanel.add(szerkesztesFoMenuBar);
     menuHorizontalPanel.add(ablakokFoMenuBar);
     
-    ListBox teszt = new ListBox();
-    teszt.addItem("egy");
-    teszt.addItem("kettő");
-    teszt.addItem("három");
-    
-    menuHorizontalPanel.add(teszt);
+    menuHorizontalPanel.add(connectionUrlTextBox);
     
     RootPanel.get("gombContainer").add(menuHorizontalPanel);
     
