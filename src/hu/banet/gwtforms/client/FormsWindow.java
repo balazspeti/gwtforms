@@ -14,7 +14,7 @@ public class FormsWindow extends DialogBox {
 
 
   HTML close = new HTML("[X]");
-  HTML title =new HTML("");
+  HTML title = new HTML("");
   HorizontalPanel captionPanel = new HorizontalPanel();
 
   

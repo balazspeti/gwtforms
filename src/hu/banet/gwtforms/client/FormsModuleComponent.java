@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.logging.*;
 
 
-public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler, FocusHandler, BlurHandler {
+public class FormsModuleComponent extends Composite implements KeyUpHandler, FocusHandler, BlurHandler {
   
   
   private static FormsModuleComponent activeComponent;
@@ -27,44 +27,52 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
   }
   
 
-  private String blockName;
-  private String recordName;
-  private int mode; // 0=Normal; 1=Enter query
-  private int visibleRecords;
-  private int currentRecord;
-  private String currentItem;
-  private String firstItem;
-  private Vector<FormsRecord> records;
-  private ScrollPanel   scrollPanel;
-  private VerticalPanel verticalPanel;
-  private boolean loaded;
-  private TextBox connectionUrlTextBox;
-  private Map<Object, Integer> widgetTable;
+  private   String blockName;
+  private   String recordName;
+  private   int mode; // 0=Normal; 1=Enter query
+  private   int visibleRecords;
+  private   int currentRecord;
+  private   String currentItem;
+  private   String firstItem;
+  private   Vector<FormsRecord> records;
+  protected VerticalPanel mainPanel;
+  private   ScrollPanel   scrollPanel;
+  private   VerticalPanel contentPanel;
+  private   boolean loaded;
+  protected TextBox connectionUrlTextBox;
+  private   Map<Object, Integer> widgetTable;
+  //private   int size;
+  private   boolean open;
   
   
   public FormsModuleComponent(String blockName, String recordName, int visibleRecords) {
     super();
-    this.mode = 0;
+    mode = 0;
     this.blockName = blockName;
     this.recordName = recordName;
     this.visibleRecords = visibleRecords;
-    this.currentRecord = 0;
-    this.currentItem = null;
-    this.firstItem = null;
-    this.records = new Vector<FormsRecord>(0);
-    this.loaded = false;
+    currentRecord = 0;
+    currentItem = null;
+    firstItem = null;
+    records = new Vector<FormsRecord>(0);
+    loaded = false;
     widgetTable = new HashMap<Object, Integer>();
+    open = false;
     
-    this.renderHead(this);
+    mainPanel = new VerticalPanel();
+    renderHead(mainPanel);
     
-    this.verticalPanel = new VerticalPanel();
-    this.scrollPanel = new ScrollPanel();
-    this.scrollPanel.setHeight("100px");
-    this.scrollPanel.add(this.verticalPanel);
-    this.add(scrollPanel);
+    scrollPanel = new ScrollPanel();
+    scrollPanel.setHeight("100px");
+    mainPanel.add(scrollPanel);
     
-    for (int i=0; i<this.visibleRecords; i++) {
-      this.renderRecord(this.verticalPanel);
+    contentPanel = new VerticalPanel();
+    scrollPanel.add(contentPanel);
+    
+    initWidget(mainPanel);
+    
+    for (int i=0; i<visibleRecords; i++) {
+      renderRecord(contentPanel);
     }
   }
   
@@ -78,12 +86,37 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
     if ( !loaded ) {        
       Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
         public void execute() {
-          scrollPanel.setHeight(verticalPanel.getOffsetHeight() + "px");
+          //size = contentPanel.getOffsetHeight();
+          scrollPanel.setHeight(contentPanel.getOffsetHeight() + "px");
         }
       });
       loaded = true;
     }
-  }  
+  }
+
+
+  public void open() {
+    if ( !open ) {
+      int index = mainPanel.getWidgetIndex(scrollPanel);
+      mainPanel.remove(scrollPanel);
+      scrollPanel.remove(contentPanel);
+      mainPanel.insert(contentPanel, index);
+      //scrollPanel.setHeight(contentPanel.getOffsetHeight() + "px");
+      open = true;
+    }
+  }   
+
+
+  public void close() {
+    if ( open ) {
+      int index = mainPanel.getWidgetIndex(contentPanel);
+      mainPanel.remove(contentPanel);
+      scrollPanel.add(contentPanel);
+      mainPanel.insert(scrollPanel, index);
+      //scrollPanel.setHeight(size + "px");
+      open = false;
+    }
+  }     
   
   
   protected void renderHead(VerticalPanel verticalPanel) {
@@ -99,34 +132,39 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
                           String name,
                           boolean queryable) {
     FormsItem item = new FormsItem(name, widget, queryable);                           
-    this.records.lastElement().put(name, item);
+    register(item);
+  }
+  
+  
+  protected void register(FormsItem item) {                       
+    this.records.lastElement().put(item.getName(), item);
     if ( this.records.size() == 1 && this.visibleRecords > 1 ) {
       item.addStyleName("selected2");
     }
-    if ( widget instanceof TextBox ) {
-      ((TextBox) widget).addFocusHandler(this);
-      ((TextBox) widget).addBlurHandler(this);
-      ((TextBox) widget).addKeyUpHandler(this);
+    if ( item.getWidget() instanceof TextBox ) {
+      ((TextBox) item.getWidget()).addFocusHandler(this);
+      ((TextBox) item.getWidget()).addBlurHandler(this);
+      ((TextBox) item.getWidget()).addKeyUpHandler(this);
     }
-    else if ( widget instanceof ListBox ) {
-      ((ListBox) widget).addFocusHandler(this);
-      ((ListBox) widget).addBlurHandler(this);
-      ((ListBox) widget).addKeyUpHandler(this);     
+    else if ( item.getWidget() instanceof ListBox ) {
+      ((ListBox) item.getWidget()).addFocusHandler(this);
+      ((ListBox) item.getWidget()).addBlurHandler(this);
+      ((ListBox) item.getWidget()).addKeyUpHandler(this);     
     }
-    else if ( widget instanceof RichTextArea ) {
-      ((RichTextArea) widget).addFocusHandler(this);
-      ((RichTextArea) widget).addBlurHandler(this);
-      ((RichTextArea) widget).addKeyUpHandler(this);     
+    else if ( item.getWidget() instanceof RichTextArea ) {
+      ((RichTextArea) item.getWidget()).addFocusHandler(this);
+      ((RichTextArea) item.getWidget()).addBlurHandler(this);
+      ((RichTextArea) item.getWidget()).addKeyUpHandler(this);     
     }    
-    else if ( widget instanceof SuggestBox ) {
-      ((SuggestBox) widget).getValueBox().addFocusHandler(this);
-      ((SuggestBox) widget).getValueBox().addBlurHandler(this);
-      ((SuggestBox) widget).getValueBox().addKeyUpHandler(this);   
+    else if ( item.getWidget() instanceof SuggestBox ) {
+      ((SuggestBox) item.getWidget()).getValueBox().addFocusHandler(this);
+      ((SuggestBox) item.getWidget()).getValueBox().addBlurHandler(this);
+      ((SuggestBox) item.getWidget()).getValueBox().addKeyUpHandler(this);   
     }
     if ( this.firstItem == null &&
-         widget != null ) {
-      this.firstItem = name;
-      this.currentItem = name;
+         item.getWidget() != null ) {
+      this.firstItem = item.getName();
+      this.currentItem = item.getName();
     }
     if ( item.getSource() != null ) {
       if ( widgetTable.containsKey(item.getSource()) ) {
@@ -136,7 +174,7 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
         widgetTable.put(item.getSource(), records.size()-1);
       }
     }
-  }
+  }  
   
   
 // F6=117; F7=118; F8=119;
@@ -226,12 +264,12 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
   
   public void clearBlock() {
     if ( this.mode == 0 ) {
-      this.verticalPanel.clear();
-      this.records.clear();
-      for (int i=0; i<this.visibleRecords; i++) {
-        this.renderRecord(this.verticalPanel);
+      contentPanel.clear();
+      records.clear();
+      for (int i=0; i<visibleRecords; i++) {
+        renderRecord(contentPanel);
       }    
-      this.records.get(0).get(this.firstItem).setFocus(true);
+      records.get(0).get(firstItem).setFocus(true);
       for (String item : records.get(0).itemNames()) {
         records.get(0).get(item).setText("");
       }
@@ -243,7 +281,6 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
     if ( this.mode == 0 ) {
       this.clearBlock();
       this.mode = 1;
-      
       for (int record=0; record<records.size(); record++) {
         for (String item : records.get(record).itemNames()) {
           records.get(record).get(item).setEnabled(false);
@@ -267,6 +304,7 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
   
   
   public void executeQuery() {
+    records.get(currentRecord).get(currentItem).change();  
     String queryParams = "";
     for (String item : records.get(0).itemNames()) {
       if ( records.get(0).get(item).getValue() != null && 
@@ -279,15 +317,6 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
         }
       }
     }
-    
-    this.mode = 0;
-    this.clearBlock();
-    for (String item : records.get(0).itemNames()) {
-      this.records.get(0).get(item).removeStyleName("enterQuery");
-      this.records.get(0).get(item).setEnabled(true);
-    }    
-    
-    this.records.get(0).get(firstItem).setFocus(true);
     
     Logger.getLogger("").log(Level.SEVERE, "GET: " + this.blockName + ".xml" + queryParams);
     RequestBuilder requestBuilder;
@@ -307,6 +336,14 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
         public void onResponseReceived(Request request, Response response) {
           int statusCode = response.getStatusCode();
           if ( statusCode == 200 || statusCode == 201 ) {
+            mode = 0;
+            clearBlock();
+            for (String item : records.get(0).itemNames()) {
+              records.get(0).get(item).removeStyleName("enterQuery");
+              records.get(0).get(item).setEnabled(true);
+            }    
+            records.get(0).get(firstItem).setFocus(true);
+            
             Element entryElement = XMLParser.parse(response.getText()).getDocumentElement();
             NodeList recordList = entryElement.getChildNodes();
             int record = 0;
@@ -316,7 +353,7 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
                 for (int j=0; j<itemList.getLength(); j++) {
                   if ( itemList.item(j).getNodeType() == Node.ELEMENT_NODE ) {
                     if ( records.size() <= record ) {
-                      renderRecord(verticalPanel);
+                      renderRecord(contentPanel);
                     }
                     String item = itemList.item(j).getNodeName();
                     FormsItem formsItem = records.get(record).get(item);
@@ -357,6 +394,7 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
   
   public void commitForm() {
     if ( this.mode == 0 ) {
+      records.get(currentRecord).get(currentItem).change();   
       Document document = XMLParser.createDocument();
       Element blockElement = document.createElement(this.blockName);
       document.appendChild(blockElement);
@@ -405,7 +443,39 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
           public void onResponseReceived(Request request, Response response) {
             int statusCode = response.getStatusCode();
             if ( statusCode == 200 || statusCode == 201 ) {
-              Window.alert("siker!");
+              mode = 0;
+              clearBlock();
+              for (String item : records.get(0).itemNames()) {
+                records.get(0).get(item).removeStyleName("enterQuery");
+                records.get(0).get(item).setEnabled(true);
+              }    
+              records.get(0).get(firstItem).setFocus(true);
+              
+              Element entryElement = XMLParser.parse(response.getText()).getDocumentElement();
+              NodeList recordList = entryElement.getChildNodes();
+              int record = 0;
+              for (int i=0; i<recordList.getLength(); i++) {
+                if ( recordList.item(i).getNodeType() == Node.ELEMENT_NODE ) {
+                  NodeList itemList = recordList.item(i).getChildNodes();
+                  for (int j=0; j<itemList.getLength(); j++) {
+                    if ( itemList.item(j).getNodeType() == Node.ELEMENT_NODE ) {
+                      if ( records.size() <= record ) {
+                        renderRecord(contentPanel);
+                      }
+                      String item = itemList.item(j).getNodeName();
+                      FormsItem formsItem = records.get(record).get(item);
+                      if ( formsItem != null ) {
+                        formsItem.setText(itemList.item(j).getChildNodes().item(0).getNodeValue());
+                      }
+                    }
+                  }
+                  records.get(record).setState("QUERY");
+                  record++;
+                }
+              }
+              for (String l : records.get(0).itemNames()) {
+                records.get(0).get(l).refresh();
+              }
             }
           }
         });
@@ -419,7 +489,7 @@ public class FormsModuleComponent extends VerticalPanel implements KeyUpHandler,
   
   public void createRecord() {
     if ( mode == 0 ) {
-      renderRecord(verticalPanel);
+      renderRecord(contentPanel);
       records.lastElement().get(firstItem).setFocus(true);
     }
   }

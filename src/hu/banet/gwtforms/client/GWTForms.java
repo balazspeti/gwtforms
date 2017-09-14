@@ -1,17 +1,13 @@
 package hu.banet.gwtforms.client;
 
-import com.google.gwt.cell.client.*;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.logging.client.*;
-import com.google.gwt.user.cellview.client.*;
-import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.*;
 import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
@@ -63,6 +59,10 @@ public class GWTForms implements EntryPoint {
     fajlFoMenuBar.addItem("Fájl", fajlAlMenuBar);
     
     MenuBar szerkesztesAlMenuBar = new MenuBar(true);
+    szerkesztesAlMenuBar.addItem("Blokk kinyit", new Command() { 
+      public void execute() { FormsModuleComponent.getActiveComponent().open(); }}); 
+    szerkesztesAlMenuBar.addItem("Blokk bezár", new Command() { 
+      public void execute() { FormsModuleComponent.getActiveComponent().close(); }});          
     /*szerkesztesAlMenuBar.addItem("Kivágás", new Command() { 
       public void execute() {  }});
     szerkesztesAlMenuBar.addItem("Másolás", new Command() { 
@@ -119,24 +119,11 @@ public class GWTForms implements EntryPoint {
     MenuBar szerkesztesFoMenuBar = new MenuBar();
     szerkesztesFoMenuBar.addItem("Szerkesztés", szerkesztesAlMenuBar);
     
-    MenuBar ablakokAlMenuBar = new MenuBar(true);
-    /*ablakokAlMenuBar.addItem("Receptek", new Command() { 
-      public void execute() { receptekDialogBox.center(); }});
-    ablakokAlMenuBar.addItem("Hozzavalok", new Command() { 
-      public void execute() { hozzavalokDialogBox.center(); }});*/   
-    ablakokAlMenuBar.addItem("Feladatok", new Command() { 
-      public void execute() { 
-        FeladatokModuleComponent feladatokModuleComponent = new FeladatokModuleComponent();
-        feladatokModuleComponent.setConnectionUrlTextBox(connectionUrlTextBox);
+    FeladatokModuleComponent feladatokModuleComponent = new FeladatokModuleComponent();
+    feladatokModuleComponent.setConnectionUrlTextBox(connectionUrlTextBox);
   
-        final FormsWindow feladatokDialogBox = new FormsWindow(false, false);
-        feladatokDialogBox.setText("Feladatok");
-        feladatokDialogBox.setAnimationEnabled(false);
-        feladatokDialogBox.setWidget(feladatokModuleComponent);       
-        feladatokDialogBox.center(); 
-      }
-    });
-    ablakokAlMenuBar.addItem("Feladatok 2", new Command() {
+
+    /*ablakokAlMenuBar.addItem("Feladatok 2", new Command() {
       public void execute() {
         List<Feladat> feladatok = Arrays.asList(
           new Feladat("1",
@@ -230,17 +217,6 @@ public class GWTForms implements EntryPoint {
         };
         cellTable.addColumn(megoldoColumn, "Megoldó");
         cellTable.setColumnWidth(megoldoColumn, 50, Style.Unit.PX);        
-        
-        /*final SingleSelectionModel<Employee> singleSelectionModel = new SingleSelectionModel<Employee>();
-        cellTable.setSelectionModel(singleSelectionModel);
-        singleSelectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
-          public void onSelectionChange(SelectionChangeEvent event) {
-            Employee selectedEmployee = singleSelectionModel.getSelectedObject();
-            if (selectedEmployee != null) {
-              Window.alert("Selected: " + selectedEmployee.getName());
-            }
-          }
-        });*/
 
         cellTable.setRowCount(feladatok.size(), true);
         cellTable.setRowData(0, feladatok);
@@ -251,19 +227,15 @@ public class GWTForms implements EntryPoint {
         feladatokDialogBox.setWidget(cellTable);       
         feladatokDialogBox.center(); 
       }
-    });
-
-    MenuBar ablakokFoMenuBar = new MenuBar();
-    ablakokFoMenuBar.addItem("Ablakok", ablakokAlMenuBar);
+    });*/
     
     HorizontalPanel menuHorizontalPanel = new HorizontalPanel();
     menuHorizontalPanel.add(fajlFoMenuBar);
     menuHorizontalPanel.add(szerkesztesFoMenuBar);
-    menuHorizontalPanel.add(ablakokFoMenuBar);
-    
     menuHorizontalPanel.add(connectionUrlTextBox);
     
-    RootPanel.get("gombContainer").add(menuHorizontalPanel);
+    RootPanel.get("menu").add(menuHorizontalPanel);
+    RootPanel.get("canvas").add(feladatokModuleComponent);
     
   }
   
