@@ -133,14 +133,6 @@ public class FormsModuleComponent extends Composite implements KeyDownHandler, F
   }
   
   
-  protected void register(Widget widget,
-                          String name,
-                          boolean queryable) {
-    FormsItem item = new FormsItem(name, widget, queryable);                           
-    register(item);
-  }
-  
-  
   protected void register(FormsItem item) {                       
     this.records.lastElement().put(item.getName(), item);
     if ( this.records.size() == 1 && this.visibleRecords > 1 ) {
@@ -277,7 +269,7 @@ public class FormsModuleComponent extends Composite implements KeyDownHandler, F
       }    
       records.get(0).get(firstItem).setFocus(true);
       for (String item : records.get(0).itemNames()) {
-        records.get(0).get(item).setText("");
+        records.get(0).get(item).setValue("");
       }
     }
   }
@@ -314,7 +306,8 @@ public class FormsModuleComponent extends Composite implements KeyDownHandler, F
     String queryParams = "";
     for (String item : records.get(0).itemNames()) {
       if ( records.get(0).get(item).getValue() != null && 
-           !"".equals(records.get(0).get(item).getValue()) ) {
+           !"".equals(records.get(0).get(item).getValue()) &&
+           records.get(0).get(item).isBounded() ) {
         if ( "".equals(queryParams) ) {
           queryParams = "?" + item + "=" + records.get(0).get(item).getValue();
         }
@@ -364,7 +357,7 @@ public class FormsModuleComponent extends Composite implements KeyDownHandler, F
                     String item = itemList.item(j).getNodeName();
                     FormsItem formsItem = records.get(record).get(item);
                     if ( formsItem != null ) {
-                      formsItem.setText(itemList.item(j).getChildNodes().item(0).getNodeValue());
+                      formsItem.setValue(itemList.item(j).getChildNodes().item(0).getNodeValue());
                     }
                   }
                 }
@@ -418,12 +411,14 @@ public class FormsModuleComponent extends Composite implements KeyDownHandler, F
           Element recordElement = document.createElement(this.recordName);
           blockElement.appendChild(recordElement);
           for (String item : records.get(record).itemNames()) {
-            Element itemElement = document.createElement(item);
-            recordElement.appendChild(itemElement);
-            Text itemText = document.createTextNode(records.get(record).get(item).getValue());
-            itemElement.appendChild(itemText);
-            records.get(record).get(item).setNotChanged();
-            //Logger.getLogger("").log(Level.SEVERE, item + record + " : " + records.get(record).get(item).getValue());
+            if ( records.get(record).get(item).isBounded() ) {
+              Element itemElement = document.createElement(item);
+              recordElement.appendChild(itemElement);
+              Text itemText = document.createTextNode(records.get(record).get(item).getValue());
+              itemElement.appendChild(itemText);
+              records.get(record).get(item).setNotChanged();
+              //Logger.getLogger("").log(Level.SEVERE, item + record + " : " + records.get(record).get(item).getValue());
+            }
           }
           records.get(record).setState("QUERY");
         }
@@ -471,7 +466,7 @@ public class FormsModuleComponent extends Composite implements KeyDownHandler, F
                       String item = itemList.item(j).getNodeName();
                       FormsItem formsItem = records.get(record).get(item);
                       if ( formsItem != null ) {
-                        formsItem.setText(itemList.item(j).getChildNodes().item(0).getNodeValue());
+                        formsItem.setValue(itemList.item(j).getChildNodes().item(0).getNodeValue());
                       }
                     }
                   }
@@ -497,6 +492,14 @@ public class FormsModuleComponent extends Composite implements KeyDownHandler, F
     if ( mode == 0 ) {
       renderRecord(contentPanel);
       records.lastElement().get(firstItem).setFocus(true);
+    }
+  }
+  
+  
+  public void listOfValues() {
+    FormsLOV lov = records.get(currentRecord).get(currentItem).getLOV();
+    if ( lov != null ) {
+      lov.show(records.get(currentRecord).get(currentItem));
     }
   }
   

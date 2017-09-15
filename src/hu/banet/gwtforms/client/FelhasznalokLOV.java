@@ -16,15 +16,16 @@ import java.util.logging.*;
 public class FelhasznalokLOV extends FormsLOV<Felhasznalo> {
   
   
-  private List<Felhasznalo> felhasznalok;
+  protected String getKey(Felhasznalo felhasznalo) {
+    return felhasznalo.getTasz();
+  }
   
   
   public FelhasznalokLOV() {
+    super();
     
-    Felhasznalo[] felhasznaloTomb = { new Felhasznalo("Balázs Péter", "011161"),
-                                      new Felhasznalo("Gipsz Jakab", "000000") };
-    
-    felhasznalok = Arrays.asList(felhasznaloTomb);
+    add(new Felhasznalo("Balázs Péter", "011161"));
+    add(new Felhasznalo("Gipsz Jakab", "000000"));
                                    
     Column<Felhasznalo, String> taszColumn = new Column<Felhasznalo, String>(
         new TextCell()) {
@@ -46,22 +47,8 @@ public class FelhasznalokLOV extends FormsLOV<Felhasznalo> {
     dataGrid.addColumn(nevColumn, "Név");
     dataGrid.setColumnWidth(nevColumn, 250, Style.Unit.PX);
     
-    dataGrid.setRowData(0, felhasznalok); 
+    dataGrid.setRowData(0, new ArrayList<Felhasznalo>(modelMap.values())); 
     
-  }
-  
-  
-  public String getSelected(Felhasznalo felhasznalo) {
-    return felhasznalo.getTasz();
-  }
-  
-
-  public List<String> getAll() {
-    List<String> felhasznaloTaszok = new ArrayList<>();
-    for ( Felhasznalo felhasznalo : felhasznalok ) {
-      felhasznaloTaszok.add(felhasznalo.getTasz());
-    }
-    return felhasznaloTaszok;
   }
   
   

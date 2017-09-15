@@ -19,10 +19,9 @@ import java.util.logging.*;
 public class FeladatokModuleComponent extends FormsModuleComponent {
   
   
-  private RichTextArea           richTextArea;
-  private RichTextToolbar        richTextToolbar;
-  private MultiWordSuggestOracle felhasznaloTaszOracle;
-  private FelhasznalokLOV        felhasznalokLOV;
+  private RichTextArea    richTextArea;
+  private RichTextToolbar richTextToolbar;
+  private FelhasznalokLOV felhasznalokLOV;
   
   
   public FeladatokModuleComponent() {
@@ -98,7 +97,7 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
     tema.setWidth("80px");
     tema.addStyleName("hsinput");   
     
-    TextBox textBox3 = new TextBox();
+    final TextBox textBox3 = new TextBox();
     textBox3.setWidth("350px");
     textBox3.addStyleName("hsinput");
     
@@ -126,17 +125,23 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
     prioritas.setWidth("80px");
     prioritas.addStyleName("hsinput");
     
+    FelhasznalokLOV letrehozoLOV = new FelhasznalokLOV();
+    
     if ( felhasznalokLOV == null ) {
       felhasznalokLOV = new FelhasznalokLOV(/*connectionUrlTextBox*/);
-      felhasznaloTaszOracle = new MultiWordSuggestOracle();
-      felhasznaloTaszOracle.addAll(felhasznalokLOV.getAll());
     }
     
-    SuggestBox letrehozoTextBox = new SuggestBox(felhasznaloTaszOracle);
+    SuggestBox letrehozoTextBox = new SuggestBox();
     letrehozoTextBox.setWidth("50px");
     letrehozoTextBox.addStyleName("hsinput");
     
-    final FormsItem letrehozoItem = new FormsItem("letrehozo", letrehozoTextBox, true);
+    final FormsItem letrehozoItem = new FormsItem("letrehozo", letrehozoTextBox, true) {
+      protected void postChange() {
+        textBox3.setText(felhasznalokLOV.get(getText()).getNev());
+        //Logger.getLogger("").log(Level.SEVERE, "changed!");
+      }
+    };
+    letrehozoItem.setLOV(felhasznalokLOV);
     
     Button letrehozoButton = new Button("?");
     letrehozoButton.addClickListener(new ClickListener() {
@@ -145,11 +150,12 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
       }
     });
     
-    SuggestBox megoldoTextBox = new SuggestBox(felhasznaloTaszOracle);    
+    SuggestBox megoldoTextBox = new SuggestBox();    
     megoldoTextBox.setWidth("50px");
     megoldoTextBox.addStyleName("hsinput");
     
     final FormsItem megoldoItem = new FormsItem("megoldo", megoldoTextBox, true);
+    megoldoItem.setLOV(felhasznalokLOV);
     
     Button megoldoButton = new Button("?");
     megoldoButton.addClickListener(new ClickListener() {

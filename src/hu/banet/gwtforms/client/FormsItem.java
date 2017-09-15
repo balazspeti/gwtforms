@@ -14,15 +14,21 @@ public class FormsItem {
   private boolean     changed;
   private FormsRecord record;
   private boolean     queryable;
+  private boolean     bounded;
   private FormsLOV    lov;
   
+  
+  protected void postChange() {
+  }
+  
  
-  public FormsItem(String name, Widget widget, boolean queryable) {
-    this.name = name;
-    this.widget = widget;
-    this.value = "";
-    this.changed = false;
+  public FormsItem(String name, Widget widget, boolean queryable, boolean bounded) {
+    this.name      = name;
+    this.widget    = widget;
+    this.value     = "";
+    this.changed   = false;
     this.queryable = queryable;
+    this.bounded   = bounded;
   } 
   
   
@@ -131,6 +137,12 @@ public class FormsItem {
   }
   
   
+  public void setValue(String text) {
+    setText(text);
+    this.value = text;
+  }  
+ 
+  
   public String getText() {
     //Logger.getLogger("").log(Level.SEVERE, "getText: " + this.name);
     if ( this.widget instanceof ValueBoxBase ) {
@@ -167,8 +179,7 @@ public class FormsItem {
     else if ( this.widget instanceof SuggestBox ) {
       ((SuggestBox) this.widget).setText(text);
     }
-    this.value = text;
-  }
+  }    
   
   
   public boolean isQueryable() {
@@ -176,19 +187,29 @@ public class FormsItem {
   }
   
   
-  public FormsLov getLOV() {
+  public boolean isBounded() {
+    return this.bounded;
+  }  
+  
+  
+  public FormsLOV getLOV() {
     return lov;
   }
   
   
-  public void setLOV(FormsLov lov) {
+  public void setLOV(FormsLOV lov) {
     this.lov = lov;
+    if ( widget instanceof SuggestBox ) {
+      MultiWordSuggestOracle oracle = (MultiWordSuggestOracle ) ((SuggestBox) widget).getSuggestOracle();
+      oracle.addAll(lov.getAll());
+    }
   }
   
   
   public void change() {
     //Logger.getLogger("").log(Level.SEVERE, "change: " + this.name);
     if ( !this.value.equals(this.getText()) ) {
+      postChange();
       this.value = this.getText();
       this.changed = true;
       if ( "NEW".equals(this.record.getState()) ) {
@@ -206,7 +227,7 @@ public class FormsItem {
   
   public void refresh() {
     if ( !this.value.equals(this.getText()) ) {
-      this.setText(this.value);
+      this.setValue(this.value);
     }
   }
   

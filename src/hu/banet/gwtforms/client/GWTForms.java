@@ -100,10 +100,10 @@ public class GWTForms implements EntryPoint {
     szerkesztesAlMenuBar.addItem("Előző rekord lemásolása", new Command() { 
       public void execute() {  }});
     szerkesztesAlMenuBar.addItem("Navigálás", new Command() { 
-      public void execute() {  }});
+      public void execute() {  }});*/
     szerkesztesAlMenuBar.addItem("Értéklista", new Command() { 
-      public void execute() {  }});
-    szerkesztesAlMenuBar.addItem("Szerkesztő", new Command() { 
+      public void execute() { FormsModuleComponent.getActiveComponent().listOfValues(); }});
+    /*szerkesztesAlMenuBar.addItem("Szerkesztő", new Command() { 
       public void execute() {  }});
     szerkesztesAlMenuBar.addItem("Mező szerinti rendezés", new Command() { 
       public void execute() {  }});

@@ -19,14 +19,24 @@ import java.util.logging.*;
 public abstract class FormsLOV<E> {
   
   
-  private   FormsItem               formsItem;
+  private   FormsItem               item;
   //protected TextBox               connectionUrlTextBox;  
   private   FormsWindow             dialogBox;
   protected DataGrid<E>             dataGrid;
   private   SingleSelectionModel<E> selectionModel;
+  protected Map<String, E>          modelMap;
+  
+  
+  protected abstract String getKey(E e);  
+  
+  
+  protected void add(E e) {
+    E tmp = modelMap.put(getKey(e), e);
+  }
   
   
   public FormsLOV(/*TextBox connectionUrlTextBox*/) {
+    modelMap = new HashMap<>();
     //this.connectionUrlTextBox = connectionUrlTextBox;
     
     /*RequestBuilder requestBuilder;
@@ -101,9 +111,9 @@ public abstract class FormsLOV<E> {
                 E e = selectionModel.getSelectedObject();
                 //Logger.getLogger("").log(Level.SEVERE, "selected: " + felhasznalo.getNev());   
                 if ( e != null ) {
-                  formsItem.setText(getSelected(e));
+                  item.setText(getKey(e));
                   dialogBox.hide();
-                  formsItem.setFocus(true);
+                  item.setFocus(true);
                 }
               }
             });
@@ -135,8 +145,8 @@ public abstract class FormsLOV<E> {
   }*/
   
   
-  public void show(FormsItem formsItem) {
-    this.formsItem = formsItem;
+  public void show(FormsItem item) {
+    this.item = item;
     if ( selectionModel.getSelectedObject() != null ) {
       selectionModel.setSelected(selectionModel.getSelectedObject(), false);
     }
@@ -144,10 +154,15 @@ public abstract class FormsLOV<E> {
     dataGrid.redraw();
     dataGrid.setFocus(true);
   }
+
   
-
-  public abstract String getSelected(E e);
-
-  public abstract List<String> getAll();
+  public Set<String> getAll() {
+    return modelMap.keySet();
+  }
+  
+  
+  public E get(String key) {
+    return modelMap.get(key);
+  }
   
 }
