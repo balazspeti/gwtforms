@@ -24,19 +24,19 @@ public abstract class FormsLOV<E> {
   private   FormsWindow             dialogBox;
   protected DataGrid<E>             dataGrid;
   private   SingleSelectionModel<E> selectionModel;
-  protected Map<String, E>          modelMap;
+  protected Map<String, E>          nameMap;
   
   
-  protected abstract String getKey(E e);  
+  protected abstract String getName(E e);  
   
   
   protected void add(E e) {
-    E tmp = modelMap.put(getKey(e), e);
+    E tmp = nameMap.put(getName(e), e);
   }
   
   
   public FormsLOV(/*TextBox connectionUrlTextBox*/) {
-    modelMap = new HashMap<>();
+    nameMap = new HashMap<>();
     //this.connectionUrlTextBox = connectionUrlTextBox;
     
     /*RequestBuilder requestBuilder;
@@ -111,7 +111,7 @@ public abstract class FormsLOV<E> {
                 E e = selectionModel.getSelectedObject();
                 //Logger.getLogger("").log(Level.SEVERE, "selected: " + felhasznalo.getNev());   
                 if ( e != null ) {
-                  item.setText(getKey(e));
+                  item.setText(getName(e));
                   dialogBox.hide();
                   item.setFocus(true);
                 }
@@ -156,13 +156,13 @@ public abstract class FormsLOV<E> {
   }
 
   
-  public Set<String> getAll() {
-    return modelMap.keySet();
+  public Set<String> getAllNames() {
+    return nameMap.keySet();
   }
   
   
-  public E get(String key) {
-    return modelMap.get(key);
+  public E getByName(String name) {
+    return nameMap.get(name);
   }
   
 }

@@ -76,14 +76,20 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
   protected void renderRecord(VerticalPanel verticalPanel) {
     super.renderRecord(verticalPanel);
     
-    TextBox textBox1 = new TextBox();
-    textBox1.setWidth("100px");
-    textBox1.addStyleName("hsinput");
+    if ( felhasznalokLOV == null ) {
+      felhasznalokLOV = new FelhasznalokLOV(/*connectionUrlTextBox*/);
+    }
     
-    /*TextBox textBox2 = new TextBox();
-    textBox2.setWidth("80px");
-    textBox2.addStyleName("hsinput");*/
+    HorizontalPanel horizontalPanel = new HorizontalPanel();
+    verticalPanel.add(horizontalPanel);
     
+    // kulcsWidget
+    TextBox kulcsWidget = new TextBox();
+    kulcsWidget.setWidth("100px");
+    kulcsWidget.addStyleName("hsinput");   
+    horizontalPanel.add(kulcsWidget);
+    
+    // temaWidget
     String[] temak = {"Cégbíróság-egyablak", 
                       "Bíróság-egyablak", 
                       "Adatlapok",
@@ -93,22 +99,25 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
                       "Egyéb"};
     MultiWordSuggestOracle temaOracle = new MultiWordSuggestOracle();
     temaOracle.addAll(Arrays.asList(temak));
-    SuggestBox tema = new SuggestBox(temaOracle);
-    tema.setWidth("80px");
-    tema.addStyleName("hsinput");   
+    SuggestBox temaWidget = new SuggestBox(temaOracle);
+    temaWidget.setWidth("80px");
+    temaWidget.addStyleName("hsinput");
+    horizontalPanel.add(temaWidget);
     
-    final TextBox textBox3 = new TextBox();
-    textBox3.setWidth("350px");
-    textBox3.addStyleName("hsinput");
+    // nevWidget
+    TextBox nevWidget = new TextBox();
+    nevWidget.setWidth("350px");
+    nevWidget.addStyleName("hsinput");
+    horizontalPanel.add(nevWidget);
     
-    TextBox textBox4 = new TextBox();
-    textBox4.setWidth("100px");
-    textBox4.addStyleName("hsinput");
+    // statuszWidget
+    TextBox statuszWidget = new TextBox();
+    statuszWidget.setWidth("100px");
+    statuszWidget.addStyleName("hsinput");
+    horizontalPanel.add(statuszWidget);
     
-    /*TextBox textBox5 = new TextBox();
-    textBox5.setWidth("60px");
-    textBox5.addStyleName("hsinput");*/
-    ListBox prioritas = new ListBox(); /*{
+    // prioritasWidget
+    ListBox prioritasWidget = new ListBox(); /*{
       public void onBrowserEvent(Event event) {
         Logger.getLogger("").log(Level.SEVERE, "before " + this.getSelectedIndex());
         event.preventDefault();
@@ -116,104 +125,129 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
         Logger.getLogger("").log(Level.SEVERE, "after " + this.getSelectedIndex());
       }
     };*/
-    prioritas.addItem("");
-    prioritas.addItem("5");
-    prioritas.addItem("4");
-    prioritas.addItem("3");
-    prioritas.addItem("2");
-    prioritas.addItem("1");
-    prioritas.setWidth("80px");
-    prioritas.addStyleName("hsinput");
+    prioritasWidget.addItem("");
+    prioritasWidget.addItem("5");
+    prioritasWidget.addItem("4");
+    prioritasWidget.addItem("3");
+    prioritasWidget.addItem("2");
+    prioritasWidget.addItem("1");
+    prioritasWidget.setWidth("80px");
+    prioritasWidget.addStyleName("hsinput");    
+    horizontalPanel.add(prioritasWidget);
     
-    FelhasznalokLOV letrehozoLOV = new FelhasznalokLOV();
+    // letrehozoNevWidget
+    SuggestBox letrehozoNevWidget = new SuggestBox();
+    letrehozoNevWidget.setWidth("50px");
+    letrehozoNevWidget.addStyleName("hsinput");
+    horizontalPanel.add(letrehozoNevWidget);    
     
-    if ( felhasznalokLOV == null ) {
-      felhasznalokLOV = new FelhasznalokLOV(/*connectionUrlTextBox*/);
-    }
+    Button letrehozoNevButton = new Button("?");
+    horizontalPanel.add(letrehozoNevButton);    
     
-    SuggestBox letrehozoTextBox = new SuggestBox();
-    letrehozoTextBox.setWidth("50px");
-    letrehozoTextBox.addStyleName("hsinput");
+    /*// letrehozoTaszWidget
+    SuggestBox letrehozoTaszWidget = new SuggestBox();
+    letrehozoTaszWidget.setWidth("50px");
+    letrehozoTaszWidget.addStyleName("hsinput");
+    horizontalPanel.add(letrehozoTaszWidget);*/      
     
-    final FormsItem letrehozoItem = new FormsItem("letrehozo", letrehozoTextBox, true) {
-      protected void postChange() {
-        textBox3.setText(felhasznalokLOV.get(getText()).getNev());
-        //Logger.getLogger("").log(Level.SEVERE, "changed!");
-      }
-    };
-    letrehozoItem.setLOV(felhasznalokLOV);
-    
-    Button letrehozoButton = new Button("?");
-    letrehozoButton.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
-        felhasznalokLOV.show(letrehozoItem);
-      }
-    });
-    
-    SuggestBox megoldoTextBox = new SuggestBox();    
-    megoldoTextBox.setWidth("50px");
-    megoldoTextBox.addStyleName("hsinput");
-    
-    final FormsItem megoldoItem = new FormsItem("megoldo", megoldoTextBox, true);
-    megoldoItem.setLOV(felhasznalokLOV);
+    // megoldoWidget
+    SuggestBox megoldoWidget = new SuggestBox();    
+    megoldoWidget.setWidth("50px");
+    megoldoWidget.addStyleName("hsinput");
+    horizontalPanel.add(megoldoWidget);
     
     Button megoldoButton = new Button("?");
-    megoldoButton.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
-        felhasznalokLOV.show(megoldoItem);
-      }
-    });    
-    
-    TextBox textBox7 = new TextBox();
-    textBox7.setWidth("50px");
-    textBox7.addStyleName("hsinput");
-    
-    HorizontalPanel horizontalPanel = new HorizontalPanel();
-    horizontalPanel.add(textBox1);
-    horizontalPanel.add(tema);
-    horizontalPanel.add(textBox3);
-    horizontalPanel.add(textBox4);
-    horizontalPanel.add(prioritas);
-    horizontalPanel.add(letrehozoTextBox);
-    horizontalPanel.add(letrehozoButton);
-    horizontalPanel.add(megoldoTextBox);
     horizontalPanel.add(megoldoButton);
     
-    verticalPanel.add(horizontalPanel);
-    
+    // leirasWidget
     if ( richTextArea == null ) {
-      this.richTextArea = new RichTextArea();
-      this.richTextArea.addStyleName("hsinput");
-      this.richTextArea.setWidth("100%");
-      this.richTextArea.setHeight("500px");
+      richTextArea = new RichTextArea();
+      richTextArea.addStyleName("hsinput");
+      richTextArea.setWidth("100%");
+      richTextArea.setHeight("500px");
       
-      this.richTextToolbar = new RichTextToolbar(this.richTextArea);
-      this.richTextToolbar.setWidth("100%");
+      richTextToolbar = new RichTextToolbar(richTextArea);
+      richTextToolbar.setWidth("100%");
 
       HorizontalPanel richTextAreaHorizontalPanel = new HorizontalPanel();
       richTextAreaHorizontalPanel.setWidth("100%");
       SimplePanel richTextAreaEmptySpace = new SimplePanel();
       richTextAreaEmptySpace.setWidth("4px");
       
-      richTextAreaHorizontalPanel.add(this.richTextArea);
+      richTextAreaHorizontalPanel.add(richTextArea);
       richTextAreaHorizontalPanel.add(richTextAreaEmptySpace);
       
       mainPanel.add(this.richTextToolbar);
       mainPanel.add(richTextAreaHorizontalPanel);
-      
-      //this.richTextArea.addFocusHandler(this);
-      //this.richTextArea.addKeyUpHandler(this); 
-    }
+    }    
     
-    this.register(null, "azon", true);
-    this.register(textBox1, "kulcs", true);
-    this.register(tema, "tema", true);
-    this.register(textBox3, "nev", true);
-    this.register(this.richTextArea, "leiras", false);
-    this.register(textBox4, "statusz", true);
-    this.register(prioritas, "prioritas", true);
-    this.register(letrehozoItem);
-    this.register(megoldoItem);
+    // azonItem
+    FormsItem azonItem = new FormsItem("azon", null, true, true);
+    register(azonItem);
+    
+    // kulcsItem
+    FormsItem kulcsItem = new FormsItem("kulcs", kulcsWidget, true, true);
+    register(kulcsItem);
+    
+    // temaItem
+    FormsItem temaItem = new FormsItem("tema", temaWidget, true, true);
+    register(temaItem);
+    
+    // nevItem
+    FormsItem nevItem = new FormsItem("nev", nevWidget, true, true);
+    register(nevItem);
+    
+    // statuszItem
+    FormsItem statuszItem = new FormsItem("statusz", statuszWidget, true, true);
+    register(statuszItem);
+    
+    // prioritasItem
+    FormsItem prioritasItem = new FormsItem("prioritas", prioritasWidget, true, true);
+    register(prioritasItem);    
+    
+    // letrehozoNevItem
+    final FormsItem letrehozoNevItem = new FormsItem("letrehozoNev", letrehozoNevWidget, true, false);
+    letrehozoNevItem.setLOV(felhasznalokLOV);
+    register(letrehozoNevItem);
+    
+    letrehozoNevButton.addClickListener(new ClickListener() {
+      public void onClick(Widget sender) {
+        felhasznalokLOV.show(letrehozoNevItem);
+      }
+    });
+    
+    // letrehozoTaszItem
+    final FormsItem letrehozoTaszItem = new FormsItem("letrehozo", null, true, true);
+    register(letrehozoTaszItem);
+    
+    // megoldoItem
+    final FormsItem megoldoItem = new FormsItem("megoldo", megoldoWidget, true, true);
+    megoldoItem.setLOV(felhasznalokLOV);
+    register(megoldoItem);
+    
+    megoldoButton.addClickListener(new ClickListener() {
+      public void onClick(Widget sender) {
+        felhasznalokLOV.show(megoldoItem);
+      }
+    });
+    
+    // leirasItem
+    FormsItem leirasItem = new FormsItem("leiras", richTextArea, false, true);
+    register(leirasItem);
+
+    // commands
+    letrehozoTaszItem.setPostQuery(new Command() { 
+      public void execute() { 
+        letrehozoNevItem.setValue(felhasznalokLOV.getByKey(letrehozoTaszItem.getValue()).getNev());
+      }
+    });
+    
+    letrehozoNevItem.setPostChange(new Command() {
+      public void execute() {
+        letrehozoTaszItem.setValue(felhasznalokLOV.getByName(letrehozoNevItem.getValue()).getTasz());
+      }
+    });
+    
   }
   
   

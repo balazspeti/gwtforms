@@ -1,6 +1,7 @@
 package hu.banet.gwtforms.client;
 
 import com.google.gwt.event.dom.client.*;
+import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.*;
 import java.util.logging.*;
 
@@ -8,18 +9,17 @@ import java.util.logging.*;
 public class FormsItem {
 
 
-  private String      name;
-  private Widget      widget;
-  private String      value;
-  private boolean     changed;
-  private FormsRecord record;
-  private boolean     queryable;
-  private boolean     bounded;
-  private FormsLOV    lov;
+  private   String      name;
+  private   Widget      widget;
+  protected String      value;
+  private   boolean     changed;
+  private   FormsRecord record;
+  private   boolean     queryable;
+  private   boolean     bounded;
+  private   FormsLOV    lov;
   
-  
-  protected void postChange() {
-  }
+  private Command postChange;
+  private Command postQuery;
   
  
   public FormsItem(String name, Widget widget, boolean queryable, boolean bounded) {
@@ -201,7 +201,7 @@ public class FormsItem {
     this.lov = lov;
     if ( widget instanceof SuggestBox ) {
       MultiWordSuggestOracle oracle = (MultiWordSuggestOracle ) ((SuggestBox) widget).getSuggestOracle();
-      oracle.addAll(lov.getAll());
+      oracle.addAll(lov.getAllNames());
     }
   }
   
@@ -209,7 +209,6 @@ public class FormsItem {
   public void change() {
     //Logger.getLogger("").log(Level.SEVERE, "change: " + this.name);
     if ( !this.value.equals(this.getText()) ) {
-      postChange();
       this.value = this.getText();
       this.changed = true;
       if ( "NEW".equals(this.record.getState()) ) {
@@ -217,6 +216,9 @@ public class FormsItem {
       }
       else if ( "QUERY".equals(this.record.getState()) ) {
         this.record.setState("CHANGED");
+      }
+      if ( postChange != null ) {
+        postChange.execute();
       }
     }
     if ( this.widget instanceof SuggestBox ) {
@@ -229,6 +231,23 @@ public class FormsItem {
     if ( !this.value.equals(this.getText()) ) {
       this.setValue(this.value);
     }
+  }
+  
+  
+  public void queried() {
+    if ( postQuery != null ) {
+      postQuery.execute();
+    }
+  }
+  
+  
+  public void setPostChange(Command postChange) {
+    this.postChange = postChange;
+  }
+  
+  
+  public void setPostQuery(Command postQuery) {
+    this.postQuery = postQuery;
   }
   
   

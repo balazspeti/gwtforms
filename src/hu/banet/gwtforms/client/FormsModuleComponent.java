@@ -358,6 +358,7 @@ public class FormsModuleComponent extends Composite implements KeyDownHandler, F
                     FormsItem formsItem = records.get(record).get(item);
                     if ( formsItem != null ) {
                       formsItem.setValue(itemList.item(j).getChildNodes().item(0).getNodeValue());
+                      formsItem.queried();
                     }
                   }
                 }
@@ -467,6 +468,7 @@ public class FormsModuleComponent extends Composite implements KeyDownHandler, F
                       FormsItem formsItem = records.get(record).get(item);
                       if ( formsItem != null ) {
                         formsItem.setValue(itemList.item(j).getChildNodes().item(0).getNodeValue());
+                        formsItem.queried();
                       }
                     }
                   }
