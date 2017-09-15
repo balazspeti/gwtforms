@@ -8,12 +8,13 @@ import java.util.logging.*;
 public class FormsItem {
 
 
-  private String name;
-  private Widget widget;
-  private String value;
-  private boolean changed;
+  private String      name;
+  private Widget      widget;
+  private String      value;
+  private boolean     changed;
   private FormsRecord record;
-  private boolean queryable;
+  private boolean     queryable;
+  private FormsLOV    lov;
   
  
   public FormsItem(String name, Widget widget, boolean queryable) {
@@ -172,6 +173,16 @@ public class FormsItem {
   
   public boolean isQueryable() {
     return this.queryable;
+  }
+  
+  
+  public FormsLov getLOV() {
+    return lov;
+  }
+  
+  
+  public void setLOV(FormsLov lov) {
+    this.lov = lov;
   }
   
   

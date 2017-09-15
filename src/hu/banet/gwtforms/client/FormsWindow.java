@@ -13,7 +13,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 public class FormsWindow extends DialogBox {
 
 
-  HTML close = new HTML("[X]");
+  //HTML close = new HTML("[X]");
   HTML title = new HTML("");
   HorizontalPanel captionPanel = new HorizontalPanel();
 
@@ -25,8 +25,8 @@ public class FormsWindow extends DialogBox {
     DOM.appendChild(td, captionPanel.getElement());
     captionPanel.setStyleName("Caption");//width-100%
     captionPanel.add(title);
-    close.addStyleName("CloseButton");//float:right
-    captionPanel.add(close);
+    //close.addStyleName("CloseButton");//float:right
+    //captionPanel.add(close);
   }
     
     
@@ -59,7 +59,7 @@ public class FormsWindow extends DialogBox {
     this.title.setText(text);
   }
 
-      
+  /*    
   protected void onPreviewNativeEvent(NativePreviewEvent event) {
     NativeEvent nativeEvent = event.getNativeEvent();
 
@@ -74,7 +74,7 @@ public class FormsWindow extends DialogBox {
     
   private boolean isCloseEvent(NativeEvent event) {
     return event.getEventTarget().equals(close.getElement());//compares equality of the underlying DOM elements
-  }
+  }*/
   
   
 }

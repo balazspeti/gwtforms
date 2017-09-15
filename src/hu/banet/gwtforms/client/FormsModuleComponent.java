@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.logging.*;
 
 
-public class FormsModuleComponent extends Composite implements KeyUpHandler, FocusHandler, BlurHandler {
+public class FormsModuleComponent extends Composite implements KeyDownHandler, FocusHandler, BlurHandler {
   
   
   private static FormsModuleComponent activeComponent;
@@ -35,6 +35,7 @@ public class FormsModuleComponent extends Composite implements KeyUpHandler, Foc
   private   String currentItem;
   private   String firstItem;
   private   Vector<FormsRecord> records;
+  private   FocusPanel    focusPanel;
   protected VerticalPanel mainPanel;
   private   ScrollPanel   scrollPanel;
   private   VerticalPanel contentPanel;
@@ -59,8 +60,12 @@ public class FormsModuleComponent extends Composite implements KeyUpHandler, Foc
     widgetTable = new HashMap<Object, Integer>();
     open = false;
     
+    focusPanel = new FocusPanel();
+    focusPanel.addKeyDownHandler(this);
+    
     mainPanel = new VerticalPanel();
     renderHead(mainPanel);
+    focusPanel.add(mainPanel);
     
     scrollPanel = new ScrollPanel();
     scrollPanel.setHeight("100px");
@@ -69,7 +74,7 @@ public class FormsModuleComponent extends Composite implements KeyUpHandler, Foc
     contentPanel = new VerticalPanel();
     scrollPanel.add(contentPanel);
     
-    initWidget(mainPanel);
+    initWidget(focusPanel);
     
     for (int i=0; i<visibleRecords; i++) {
       renderRecord(contentPanel);
@@ -144,22 +149,22 @@ public class FormsModuleComponent extends Composite implements KeyUpHandler, Foc
     if ( item.getWidget() instanceof TextBox ) {
       ((TextBox) item.getWidget()).addFocusHandler(this);
       ((TextBox) item.getWidget()).addBlurHandler(this);
-      ((TextBox) item.getWidget()).addKeyUpHandler(this);
+      //((TextBox) item.getWidget()).addKeyUpHandler(this);
     }
     else if ( item.getWidget() instanceof ListBox ) {
       ((ListBox) item.getWidget()).addFocusHandler(this);
       ((ListBox) item.getWidget()).addBlurHandler(this);
-      ((ListBox) item.getWidget()).addKeyUpHandler(this);     
+      //((ListBox) item.getWidget()).addKeyUpHandler(this);     
     }
     else if ( item.getWidget() instanceof RichTextArea ) {
       ((RichTextArea) item.getWidget()).addFocusHandler(this);
       ((RichTextArea) item.getWidget()).addBlurHandler(this);
-      ((RichTextArea) item.getWidget()).addKeyUpHandler(this);     
+      //((RichTextArea) item.getWidget()).addKeyUpHandler(this);     
     }    
     else if ( item.getWidget() instanceof SuggestBox ) {
       ((SuggestBox) item.getWidget()).getValueBox().addFocusHandler(this);
       ((SuggestBox) item.getWidget()).getValueBox().addBlurHandler(this);
-      ((SuggestBox) item.getWidget()).getValueBox().addKeyUpHandler(this);   
+      //((SuggestBox) item.getWidget()).getValueBox().addKeyUpHandler(this);   
     }
     if ( this.firstItem == null &&
          item.getWidget() != null ) {
@@ -180,8 +185,9 @@ public class FormsModuleComponent extends Composite implements KeyUpHandler, Foc
 // F6=117; F7=118; F8=119;
 // Down=40; Up=38; Left=37; Right=39;
 // Tab=9; Esc=27; Enter=13;
-  public void onKeyUp(KeyUpEvent event) {
+  public void onKeyDown(KeyDownEvent event) {
     int keyCode = event.getNativeEvent().getKeyCode();
+    //Logger.getLogger("").log(Level.SEVERE, "keyCode: " + keyCode);
     if ( keyCode == 38 ) {
       if ( !(records.get(currentRecord).get(currentItem).getWidget() instanceof ListBox) ) {
         this.up();

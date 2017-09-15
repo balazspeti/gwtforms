@@ -19,9 +19,10 @@ import java.util.logging.*;
 public class FeladatokModuleComponent extends FormsModuleComponent {
   
   
-  private RichTextArea    richTextArea;
-  private RichTextToolbar richTextToolbar;
-  private FelhasznalokLOV felhasznalokLOV;
+  private RichTextArea           richTextArea;
+  private RichTextToolbar        richTextToolbar;
+  private MultiWordSuggestOracle felhasznaloTaszOracle;
+  private FelhasznalokLOV        felhasznalokLOV;
   
   
   public FeladatokModuleComponent() {
@@ -54,11 +55,11 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
     
     Label label6 = new Label("Létrehozó");
     label6.addStyleName("hsprompt");
-    label6.setWidth("78px");
+    label6.setWidth("79px");
 
     Label label7 = new Label("Megoldó");
     label7.addStyleName("hsprompt");
-    label7.setWidth("78px");
+    label7.setWidth("79px");
  
     HorizontalPanel horizontalPanel = new HorizontalPanel();
     horizontalPanel.add(label1);
@@ -91,9 +92,9 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
                       "Egyebek",
                       "Cégjegyzékszám",
                       "Egyéb"};
-    MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
-    oracle.addAll(Arrays.asList(temak));
-    SuggestBox tema = new SuggestBox(oracle);
+    MultiWordSuggestOracle temaOracle = new MultiWordSuggestOracle();
+    temaOracle.addAll(Arrays.asList(temak));
+    SuggestBox tema = new SuggestBox(temaOracle);
     tema.setWidth("80px");
     tema.addStyleName("hsinput");   
     
@@ -127,9 +128,11 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
     
     if ( felhasznalokLOV == null ) {
       felhasznalokLOV = new FelhasznalokLOV(/*connectionUrlTextBox*/);
+      felhasznaloTaszOracle = new MultiWordSuggestOracle();
+      felhasznaloTaszOracle.addAll(felhasznalokLOV.getAll());
     }
     
-    TextBox letrehozoTextBox = new TextBox();
+    SuggestBox letrehozoTextBox = new SuggestBox(felhasznaloTaszOracle);
     letrehozoTextBox.setWidth("50px");
     letrehozoTextBox.addStyleName("hsinput");
     
@@ -142,7 +145,7 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
       }
     });
     
-    TextBox megoldoTextBox = new TextBox();
+    SuggestBox megoldoTextBox = new SuggestBox(felhasznaloTaszOracle);    
     megoldoTextBox.setWidth("50px");
     megoldoTextBox.addStyleName("hsinput");
     
@@ -192,8 +195,8 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
       mainPanel.add(this.richTextToolbar);
       mainPanel.add(richTextAreaHorizontalPanel);
       
-      this.richTextArea.addFocusHandler(this);
-      this.richTextArea.addKeyUpHandler(this); 
+      //this.richTextArea.addFocusHandler(this);
+      //this.richTextArea.addKeyUpHandler(this); 
     }
     
     this.register(null, "azon", true);
