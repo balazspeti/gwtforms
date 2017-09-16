@@ -147,6 +147,7 @@ public abstract class FormsLOV<E> {
   
   public void show(FormsItem item) {
     this.item = item;
+    item.setFocus(true);
     if ( selectionModel.getSelectedObject() != null ) {
       selectionModel.setSelected(selectionModel.getSelectedObject(), false);
     }
