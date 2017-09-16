@@ -208,7 +208,7 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
     register(nevItem);
     
     // statuszItem
-    FormsItem statuszItem = new FormsItem("statusz", statuszWidget, true, true);
+    final FormsItem statuszItem = new FormsItem("statusz", statuszWidget, true, true);
     register(statuszItem);
 
     statuszButton.addClickListener(new ClickListener() {
@@ -218,7 +218,7 @@ public class FeladatokModuleComponent extends FormsModuleComponent {
     }); 
     
     // prioritasNevItem
-    FormsItem prioritasNevItem = new FormsItem("prioritasNev", prioritasNevWidget, true, false);
+    final FormsItem prioritasNevItem = new FormsItem("prioritasNev", prioritasNevWidget, true, false);
     register(prioritasNevItem);    
     
     prioritasNevButton.addClickListener(new ClickListener() {
